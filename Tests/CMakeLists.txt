@@ -2,6 +2,8 @@ project(tests)
 
 set(SRC_LIST
     main.cpp
+    TestBigNum.cpp
+    TestEllipticCurves.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})
