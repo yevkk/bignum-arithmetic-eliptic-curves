@@ -1,6 +1,5 @@
-#include "Eliptic_curves/eliptic_curves.hpp"
-#include "Bignum_arithmetic/bignum_arithmetic.hpp"
-#include <iostream>
+#include <BigNum.hpp>
+#include <EllipticCurves.hpp>
 
 int main()
 {
