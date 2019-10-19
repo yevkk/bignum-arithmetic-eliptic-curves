@@ -111,17 +111,17 @@ namespace lab {
 
             /// Helper functions
              /**
-              * to_one_digit returns a vector of BigNum 's digits
+              * toOneDigit returns a vector of BigNum 's digits
               * @param num1 BigNum
               * @return vector of it's digits
               */
-            friend std::vector<char> to_one_digit(const BigNum& num1);
+            friend std::vector<char> toOneDigit(const BigNum& num1);
             /**
-              * to_big_num returns a BigNum converted from vector of it's digits (reverse to to_one_digit function)
+              * toBigNum returns a BigNum converted from vector of it's digits (reverse to toOneDigit function)
               * @param num1 vector of digits
               * @return BigNum
               */
-            friend BigNum to_big_num(std::vector<char>& num1);
+            friend BigNum toBigNum(std::vector<char>& num1);
         };
     } // namespace big
 } // namespace lab

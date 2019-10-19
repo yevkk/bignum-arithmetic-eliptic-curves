@@ -134,7 +134,8 @@ namespace lab {
                 result = num1;
                 int addition = 0;
                 for (int curr_pos = 0; curr_pos < num2._digits.size(); curr_pos++) {
-                    long long temp = result._digits[curr_pos] + num2._digits[curr_pos] + addition;
+                    long long temp = static_cast<long long>(result._digits[curr_pos])
+                            + static_cast<long long>(num2._digits[curr_pos]) + addition;
                     result._digits[curr_pos] = temp % NUM_BASE;
                     addition = temp / NUM_BASE;
                     result._digits[curr_pos] = result._digits[curr_pos] % NUM_BASE;
@@ -162,7 +163,7 @@ namespace lab {
             return result;
         }
 
-        std::vector<char> to_one_digit(const BigNum &num1) {
+        std::vector<char> toOneDigit(const BigNum &num1) {
             std::vector<char> fnum;
             for (int curr_pos = 0; curr_pos < num1._digits.size(); curr_pos++) {
                 int counter = num1._digits[curr_pos];
@@ -177,7 +178,7 @@ namespace lab {
             return fnum;
         }
 
-        BigNum to_big_num(std::vector<char> &num1) {
+        BigNum toBigNum(std::vector<char> &num1) {
             std::string str_num = "";
             for (int i = num1.size() - 1; i >= 0; i--) {
                 str_num += ('0' + num1[i]);
@@ -243,8 +244,8 @@ namespace lab {
         std::pair<BigNum, BigNum> extract(const BigNum &num1, const BigNum &num2) {
             if (num1 < num2)
                 return std::pair<BigNum, BigNum>(BigNum("0"), num1);
-            std::vector<char> fnum = to_one_digit(num1);
-            std::vector<char> snum = to_one_digit(num2);
+            std::vector<char> fnum = toOneDigit(num1);
+            std::vector<char> snum = toOneDigit(num2);
             std::vector<char> result;
             std::vector<char> current = snum;
             std::vector<char> temp;
@@ -283,7 +284,7 @@ namespace lab {
                 }
             }
             std::reverse(result.begin(), result.end());
-            return std::pair<BigNum, BigNum>(to_big_num(result), to_big_num(fnum));
+            return std::pair<BigNum, BigNum>(toBigNum(result), toBigNum(fnum));
         }
 
         void modify(BigNum &num, const BigNum &mod) {
