@@ -1,4 +1,4 @@
-#### Naming Conventions
+### Naming Conventions
 - `CamelCase`:
     - Types (start with capitals): `MyClass`;
     - Functions (start with lower case): `myMethod`;
@@ -9,5 +9,5 @@
 
 Use `_` prefix for private members and methods: `_my_private_field`;
 
-####Unit Tests
+### Unit Tests
 There should be a test for every implemented feature.
