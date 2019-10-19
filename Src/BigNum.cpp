@@ -201,7 +201,7 @@ namespace lab {
             return result;
         }
 
-        bool is_lower_digits(std::vector<char> &num1, std::vector<char> &num2, int step) {
+        bool isLowerDigits(std::vector<char> &num1, std::vector<char> &num2, int step) {
             if ((step > num2.size()) && (step <= num1.size())) return false;
             if ((step < num2.size()) || (num1.size() < num2.size())) return true;
             if (step > num1.size()) return true;
@@ -212,11 +212,11 @@ namespace lab {
             return false;
         }
 
-        bool is_bigger_digits(std::vector<char> &num1, std::vector<char> &num2, int step) {
-            return !(is_lower_digits(num1, num2, step));
+        bool isBiggerDigits(std::vector<char> &num1, std::vector<char> &num2, int step) {
+            return !(isLowerDigits(num1, num2, step));
         }
 
-        std::vector<char> multiply_digits(std::vector<char> &num1, int num2) {
+        std::vector<char> multiplyDigits(std::vector<char> &num1, int num2) {
             std::vector<char> result = num1;
             int addition = 0;
             for (int curr_pos = 0; curr_pos < result.size(); curr_pos++) {
@@ -230,7 +230,7 @@ namespace lab {
             return result;
         }
 
-        void left_substract(std::vector<char> &num1, std::vector<char> &num2, int side) {
+        void leftSubstract(std::vector<char> &num1, std::vector<char> &num2, int side) {
             for (int i = 0; i < num2.size(); i++) {
                 if (num1[num1.size() - side + i] < num2[i]) {
                     num1[num1.size() - side + i] = 10 + num1[num1.size() - side + i] - num2[i];
@@ -253,24 +253,24 @@ namespace lab {
             int power = 1;
 
             side = current.size();
-            while ((is_lower_digits(fnum, current, side))) {
+            while ((isLowerDigits(fnum, current, side))) {
                 side++;
             }
             while (true) {
-                if ((power == 1) && (is_lower_digits(fnum, current, side))) {
+                if ((power == 1) && (isLowerDigits(fnum, current, side))) {
                     side++;
                     if (side > fnum.size()) {
                         break;
                     }
                     result.push_back(0);
                 }
-                if (is_bigger_digits(fnum, current, side)) {
+                if (isBiggerDigits(fnum, current, side)) {
                     power++;
-                    current = multiply_digits(snum, power);
+                    current = multiplyDigits(snum, power);
                 }
-                if ((power != 1) && (is_lower_digits(fnum, current, side))) {
-                    current = multiply_digits(snum, power - 1);
-                    left_substract(fnum, current, side);
+                if ((power != 1) && (isLowerDigits(fnum, current, side))) {
+                    current = multiplyDigits(snum, power - 1);
+                    leftSubstract(fnum, current, side);
                     int prev_size = temp.size();
                     temp.clear();
                     while (!fnum.empty() && fnum.back() == 0) {
