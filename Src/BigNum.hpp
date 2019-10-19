@@ -32,7 +32,7 @@ namespace lab {
         {
         private:
             //// Array of coefficients in representation
-            std::vector<int> digits;
+            std::vector<int> _digits;
         public:
             /// Copy constructor
             BigNum(const BigNum& r);

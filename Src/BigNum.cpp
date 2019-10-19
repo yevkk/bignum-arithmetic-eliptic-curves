@@ -11,14 +11,14 @@ namespace lab {
     namespace big {
 
         BigNum::BigNum(const BigNum &r) {
-            digits = r.digits;
+            _digits = r._digits;
         }
 
         BigNum::BigNum() {
         }
 
         BigNum::BigNum(std::string num_str) {
-            digits.clear();
+            _digits.clear();
             for (int i = num_str.size() - 1; i >= 0; i -= SECTION_DIGITS) {
                 std::string curr_section;
                 if (i - SECTION_DIGITS + 1 < 0) {
@@ -30,10 +30,10 @@ namespace lab {
                 for (int j = 0; j < curr_section.size(); j++) {
                     counter = counter * 10 + (curr_section[j] - '0');
                 }
-                digits.push_back(counter);
+                _digits.push_back(counter);
             }
-            while (!digits.empty() && digits.back() == 0) {
-                digits.pop_back();
+            while (!_digits.empty() && _digits.back() == 0) {
+                _digits.pop_back();
             }
         }
 
@@ -41,23 +41,25 @@ namespace lab {
             if (this == &r) {
                 return *this;
             }
-            digits = r.digits;
+            _digits = r._digits;
             return *this;
         }
 
         int& BigNum::operator[](int index)
         {
-            assert((index >= 0)&&(index<digits.size()));
-            return digits[index];
+            if (!((index >= 0)&&(index < _digits.size()))) {
+                throw "no such index";
+            }
+            return _digits[index];
         }
 
         std::string BigNum::str()
         {
             std::string result = "";
             int leading_zeros = 0;
-            for (int curr_pos = 0; curr_pos <digits.size() ; curr_pos++) {
+            for (int curr_pos = 0; curr_pos <_digits.size() ; curr_pos++) {
                 std::string temp = "";
-                int counter = digits[curr_pos];
+                int counter = _digits[curr_pos];
                 int i = 0;
                 while (i < SECTION_DIGITS) {
                     if ((counter % 10) == 0) {
@@ -74,11 +76,11 @@ namespace lab {
         }
 
         bool operator<(const BigNum& l, const BigNum& r) {
-            if (l.digits.size() < r.digits.size()) return true;
-            if (l.digits.size() > r.digits.size()) return false;
-            for (int curr_pos = l.digits.size() - 1; curr_pos >= 0; curr_pos--) {
-                if (l.digits[curr_pos] < r.digits[curr_pos]) return true;
-                if (l.digits[curr_pos] > r.digits[curr_pos]) return false;
+            if (l._digits.size() < r._digits.size()) return true;
+            if (l._digits.size() > r._digits.size()) return false;
+            for (int curr_pos = l._digits.size() - 1; curr_pos >= 0; curr_pos--) {
+                if (l._digits[curr_pos] < r._digits[curr_pos]) return true;
+                if (l._digits[curr_pos] > r._digits[curr_pos]) return false;
             }
             return false;
         }
@@ -104,8 +106,8 @@ namespace lab {
         }
 
         std::ostream &operator<<(std::ostream &os, const BigNum &num) {
-            for (int last_index = num.digits.size() - 1; last_index >= 0; last_index--) {
-                int counter = num.digits[last_index];
+            for (int last_index = num._digits.size() - 1; last_index >= 0; last_index--) {
+                int counter = num._digits[last_index];
                 os << counter;
             }
             return os;
@@ -120,22 +122,22 @@ namespace lab {
 
         BigNum operator+(const BigNum &num1, const BigNum &num2) {
             BigNum result;
-            if (num2.digits.size() > num1.digits.size()) {
+            if (num2._digits.size() > num1._digits.size()) {
                 result = num2;
                 int addition = 0;
-                for (int curr_pos = 0; curr_pos < num1.digits.size(); curr_pos++) {
-                    result.digits[curr_pos] += num1.digits[curr_pos] + addition;
-                    addition = result.digits[curr_pos] / NUM_BASE;
-                    result.digits[curr_pos] = result.digits[curr_pos] % NUM_BASE;
+                for (int curr_pos = 0; curr_pos < num1._digits.size(); curr_pos++) {
+                    result._digits[curr_pos] += num1._digits[curr_pos] + addition;
+                    addition = result._digits[curr_pos] / NUM_BASE;
+                    result._digits[curr_pos] = result._digits[curr_pos] % NUM_BASE;
                 }
             } else {
                 result = num1;
                 int addition = 0;
-                for (int curr_pos = 0; curr_pos < num2.digits.size(); curr_pos++) {
-                    long long temp = result.digits[curr_pos] + num2.digits[curr_pos] + addition;
-                    result.digits[curr_pos] = temp % NUM_BASE;
+                for (int curr_pos = 0; curr_pos < num2._digits.size(); curr_pos++) {
+                    long long temp = result._digits[curr_pos] + num2._digits[curr_pos] + addition;
+                    result._digits[curr_pos] = temp % NUM_BASE;
                     addition = temp / NUM_BASE;
-                    result.digits[curr_pos] = result.digits[curr_pos] % NUM_BASE;
+                    result._digits[curr_pos] = result._digits[curr_pos] % NUM_BASE;
                 }
             }
             return result;
@@ -143,18 +145,18 @@ namespace lab {
 
         BigNum operator-(const BigNum &num1, const BigNum &num2) {
             BigNum result = num1;
-            for (int curr_pos = 0; curr_pos < num2.digits.size(); curr_pos++) {
-                if (result.digits[curr_pos] < num2.digits[curr_pos]) {
-                    result.digits[curr_pos] = result.digits[curr_pos] - num2.digits[curr_pos] + NUM_BASE;
-                    result.digits[curr_pos + 1] -= 1;
+            for (int curr_pos = 0; curr_pos < num2._digits.size(); curr_pos++) {
+                if (result._digits[curr_pos] < num2._digits[curr_pos]) {
+                    result._digits[curr_pos] = result._digits[curr_pos] - num2._digits[curr_pos] + NUM_BASE;
+                    result._digits[curr_pos + 1] -= 1;
                 } else {
-                    result.digits[curr_pos] = result.digits[curr_pos] - num2.digits[curr_pos];
+                    result._digits[curr_pos] = result._digits[curr_pos] - num2._digits[curr_pos];
                 }
             }
-            if (num1.digits.size() > num2.digits.size()) {
-                if (result.digits[num2.digits.size()] < 0) {
-                    result.digits[num2.digits.size()] += NUM_BASE;
-                    result.digits[num2.digits.size() + 1] -= 1;
+            if (num1._digits.size() > num2._digits.size()) {
+                if (result._digits[num2._digits.size()] < 0) {
+                    result._digits[num2._digits.size()] += NUM_BASE;
+                    result._digits[num2._digits.size() + 1] -= 1;
                 }
             }
             return result;
@@ -162,8 +164,8 @@ namespace lab {
 
         std::vector<char> to_one_digit(const BigNum &num1) {
             std::vector<char> fnum;
-            for (int curr_pos = 0; curr_pos < num1.digits.size(); curr_pos++) {
-                int counter = num1.digits[curr_pos];
+            for (int curr_pos = 0; curr_pos < num1._digits.size(); curr_pos++) {
+                int counter = num1._digits[curr_pos];
                 for (int i = 0; i < SECTION_DIGITS; i++) {
                     fnum.push_back(counter % 10);
                     counter = counter / 10;
@@ -186,14 +188,14 @@ namespace lab {
 
         BigNum operator*(const BigNum &num1, int num2) {
             BigNum result = num1;
-            long long addition = 0;
-            for (int curr_pos = 0; curr_pos < result.digits.size(); curr_pos++) {
-                long long temp = result.digits[curr_pos] * num2 + addition;
-                result.digits[curr_pos] = temp % NUM_BASE;
+            unsigned long long addition = 0;
+            for (int curr_pos = 0; curr_pos < result._digits.size(); curr_pos++) {
+                unsigned long long temp = static_cast<long long>(result._digits[curr_pos]) * num2 + addition;
+                result._digits[curr_pos] = temp % NUM_BASE;
                 addition = temp / NUM_BASE;
             }
             if (addition != 0) {
-                result.digits.push_back(addition);
+                result._digits.push_back(addition);
             }
             return result;
         }

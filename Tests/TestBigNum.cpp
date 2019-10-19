@@ -74,17 +74,50 @@ TEST_CASE("Big numbers test", "[BigNum]") {
         }
     }
 
-    SECTION( "Subtract BigNum" ) {
-        lab::big::BigNum mod("666666666666");
-        SECTION( "normal" ) {
-            lab::big::BigNum num1("123456789000");
-            lab::big::BigNum num2("67335999999");
-            REQUIRE(subtract(num1, num2, mod) == lab::big::BigNum("56120789001"));
+    /// Other operators use '<', no need to check them
+    SECTION( "BigNum <" ) {
+        SECTION( "less" ) {
+            lab::big::BigNum a ("1234567890");
+            lab::big::BigNum b ("1234667890");
+            REQUIRE(a < b);
         }
-        SECTION( "with modification" ) {
-            lab::big::BigNum num1("12345678907777456243534");
-            lab::big::BigNum num2("1234560007774123570039999");
-            REQUIRE(subtract(num1, num2, mod) == lab::big::BigNum("431671874667"));
+        SECTION( "equal" ) {
+            lab::big::BigNum a ("1234567890");
+            lab::big::BigNum b ("1234567890");
+            REQUIRE(!(a < b));
+        }
+        SECTION( "bigger" ) {
+            lab::big::BigNum a ("2234568890");
+            lab::big::BigNum b ("2234567890");
+            REQUIRE(!(a < b));
+        }
+    }
+
+    SECTION( "Copy" ) {
+        SECTION( "test" ) {
+            lab::big::BigNum a ("1234567890");
+            lab::big::BigNum b;
+            b = a;
+            REQUIRE(a == b);
+        }
+    }
+
+    SECTION( "Subscript" ) {
+        SECTION( "test" ) {
+            lab::big::BigNum a ("77000000000");
+            REQUIRE(a[1] == 77);
+        }
+        SECTION( "error" ) {
+            lab::big::BigNum a ("0");
+            REQUIRE_THROWS(a[1]);
+            REQUIRE_THROWS(a[-1]);
+        }
+    }
+
+    SECTION( "Multiply" ) {
+        SECTION( "test" ) {
+            lab::big::BigNum a ("7752362423526235624");
+            REQUIRE(a*791 == lab::big::BigNum("6132118677009252378584"));
         }
     }
 
