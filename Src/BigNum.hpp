@@ -1,11 +1,5 @@
-// -*- lsst-c++ -*-
-/**
-* @file BigNum.hpp
-*
-*
-*/
-
 #pragma once
+
 #include <vector>
 #include <iostream>
 #include <algorithm>
@@ -13,115 +7,119 @@
 #include <cassert>
 
 namespace lab {
-    namespace big {
 
-        /** NUM_BASE points to the max value BigNum array's cell can hold
-         *  (basis in linear representation)
-         *
-         * SECTION_DIGITS points to the max value of T, where 10**T <= NUM_BASE
-         *
-         */
-        const char SECTION_DIGITS = 9;
-        const int NUM_BASE = 1000000000;
+/**
+ * @brief BigNum class can hold big POSITIVE integers
+ */
+class BigNum
+{
+public:
+    BigNum(const BigNum& that) = default;
 
-        /** @class
-         * BigNum class can hold big POSITIVE integers
-         *
-         */
-        class BigNum
-        {
-        private:
-            //// Array of coefficients in representation
-            std::vector<int> _digits;
-        public:
-            /// Copy constructor
-            BigNum(const BigNum& r);
+    BigNum(std::string_view num_str);
 
-            /// String constructor
-            BigNum(std::string num);
+    BigNum() = default;
 
-            /// Default constructor ?
-            BigNum();
+    BigNum& operator=(const BigNum& that) = default;
 
-            /// Copy operator
-            BigNum& operator=(const BigNum& r);
+    friend std::string to_string(const BigNum& num);
 
-            /// Subscript operator
-            int& operator[](int index);
+    friend bool operator<(const BigNum& left, const BigNum& right);
+    friend bool operator<=(const BigNum& left, const BigNum& right);
+    friend bool operator>(const BigNum& left, const BigNum& right);
+    friend bool operator>=(const BigNum& left, const BigNum& right);
+    friend bool operator==(const BigNum& left, const BigNum& right);
+    friend bool operator!=(const BigNum& left, const BigNum& right);
 
-            /// Returns number in string format
-            std::string str();
+    /**
+     * @brief operator- for subtracting two BigNums
+     * @note left number must be bigger than right number
+     */
+    friend BigNum operator-(const BigNum& left, const BigNum& right);
+    friend BigNum operator+(const BigNum& left, const BigNum& right);
 
-            /// Comparison operators
-            friend bool operator<(const BigNum& l, const BigNum& r);
-            friend bool operator<=(const BigNum& l, const BigNum& r);
-            friend bool operator>(const BigNum& l, const BigNum& r);
-            friend bool operator>=(const BigNum& l, const BigNum& r);
-            friend bool operator==(const BigNum& l, const BigNum& r);
-            friend bool operator!=(const BigNum& l, const BigNum& r);
+    friend BigNum operator*(const BigNum& left, int right);
 
-            /**
-             * !DO NOT USE THESE OPERATORS!
-             * use add() and subscript() instead
-             */
-            friend BigNum operator-(const BigNum& num1, const BigNum& num2);
-            friend BigNum operator+(const BigNum& num1, const BigNum& num2);
+    /// TODO
+    friend BigNum operator*(const BigNum& left, const BigNum& right);
 
-            /// Multiply operators
-            friend BigNum operator*(const BigNum& num1, int num2);
-            /// TODO
-            friend BigNum operator*(const BigNum& num1, const BigNum& num2);
+    friend BigNum operator%(const BigNum& left, const BigNum& right);
 
-            /// Modulo operator
-            friend BigNum operator%(const BigNum& num1, const BigNum& num2);
+    template<typename OStream>
+    friend OStream& operator<<(OStream& os, const BigNum& num);
+    template<typename IStream>
+    friend IStream& operator>>(IStream& is, BigNum& num);
 
-            /// Ostream/istream operators
-            friend std::ostream& operator<<(std::ostream& os, const BigNum& num);
-            friend std::istream& operator>>(std::istream& os, BigNum& num);
+    /**
+     * @brief modify function converts num to a corresponding number in group modulo mod
+     * @param num
+     * @param mod
+     */
+    friend void modify(BigNum& num, const BigNum& mod);
 
-            /// Modify changes num to result of (@param num % @param mod)
-            friend void modify(BigNum& num, const BigNum& mod);
+    /**
+     * @brief add function performs modulo addition of two BigNums
+     * @param first
+     * @param second
+     * @param mod
+     * @return summation result
+     */
+    friend BigNum add(const BigNum& first, const BigNum& second, const BigNum& mod);
 
-            /**
-             * add function performs modulo addition
-             * @param num1 first BigNum
-             * @param num2 second BigNum
-             * @param mod modulo value
-             * @return summation result
-             */
-            friend BigNum add(const BigNum& num1, const BigNum& num2, const BigNum& mod);
+    /**
+     * @brief subtract function performs modulo subtraction
+     * @param first
+     * @param second
+     * @param mod
+     * @return summation result
+     */
+    friend BigNum subtract(const BigNum& first, const BigNum& second, const BigNum& mod);
 
-            /**
-             * subtract function performs modulo subtraction
-             * @param num1 first BigNum
-             * @param num2 second BigNum
-             * @param mod modulo value
-             * @return summation result
-             */
-            friend BigNum subtract(const BigNum& num1, const BigNum& num2, const BigNum& mod);
+    /**
+     * @brief extract function performs BigNum division
+     * @note complexity is O(n^2)
+     * @param first
+     * @param second
+     * @return pair of BigNum, where the first number is an integer
+     * and the second is a remainder of division
+     */
+    friend std::pair<BigNum, BigNum> extract(const BigNum& first, const BigNum& second);
 
-            /**
-             * extract function performs BigNum division
-             * @param num1 first BigNum
-             * @param num2 second BigNum
-             * @return pair of BigNum, where the first number is an integer
-             * and the second is a remainder of division
-             */
-            friend std::pair<BigNum, BigNum> extract(const BigNum& num1, const BigNum& num2);
+     /**
+      * @brief toOneDigit function returns a vector of BigNum 's digits
+      * @param num
+      * @return digits
+      */
+    friend std::vector<char> toOneDigit(const BigNum& num);
 
-            /// Helper functions
-             /**
-              * toOneDigit returns a vector of BigNum 's digits
-              * @param num1 BigNum
-              * @return vector of it's digits
-              */
-            friend std::vector<char> toOneDigit(const BigNum& num1);
-            /**
-              * toBigNum returns a BigNum converted from vector of it's digits (reverse to toOneDigit function)
-              * @param num1 vector of digits
-              * @return BigNum
-              */
-            friend BigNum toBigNum(std::vector<char>& num1);
-        };
-    } // namespace big
+    /**
+      * @brief toBigNum function returns a BigNum converted from vector of it's digits (reverse to toOneDigit function)
+      * @param in_digits
+      * @return BigNum
+      */
+    friend BigNum toBigNum(std::vector<char>& num_digits);
+
+private:
+    //// Array of coefficients in representation
+    std::vector<int> _digits;
+};
+
+template<typename OStream>
+OStream& operator<<(OStream& os, const BigNum& num)
+{
+    for (int last_index = num._digits.size() - 1; last_index >= 0; last_index--) {
+        int counter = num._digits[last_index];
+        os << counter;
+    }
+    return os;
+}
+
+template<typename IStream>
+IStream& operator>>(IStream& is, BigNum& num)
+{
+    std::string num_str;
+    is >> num_str;
+    num = BigNum(num_str);
+    return is;
+}
 } // namespace lab
