@@ -3,13 +3,13 @@
 namespace lab {
 
 /**
- * @brief NUM_BASE points to the max value BigNum array's cell can hold,
+ * @brief Points to the max value BigNum array's cell can hold,
  * same as basis in linear representation
  */
 constexpr int NUM_BASE = 1000000000;
 
 /**
- * @brief SECTION_DIGITS points to number of digits in (NUM_BASE-1)
+ * @brief Points to number of digits in (NUM_BASE-1)
  */
 constexpr char SECTION_DIGITS = 9;
 
@@ -167,11 +167,8 @@ BigNum operator*(const BigNum &left, int right) {
 }
 
 /**
- * @brief isLowerDigits applies operator< for vectors of digits
- * @param left
- * @param right
- * @param step points to number of digits from beginning of left var to compare
- * @return result
+ * @brief Compares vector of digits with operator <
+ * @param step points to the number of digits from beginning of left var to compare
  */
 bool isLowerDigits(std::vector<char> &left, std::vector<char> &right, int step) {
     if ((step > right.size()) && (step <= left.size())) return false;
@@ -185,21 +182,15 @@ bool isLowerDigits(std::vector<char> &left, std::vector<char> &right, int step) 
 }
 
 /**
- * @brief isBiggerDigits applies operator>= for vectors of digits
- * @param left
- * @param right
- * @param step points to number of digits from beginning of left var to compare
- * @return result
+ * @brief Compares vector of digits with operator >=
+ * @param step points to the number of digits from beginning of left var to compare
  */
 bool isBiggerDigits(std::vector<char> &num1, std::vector<char> &num2, int step) {
     return !(isLowerDigits(num1, num2, step));
 }
 
 /**
- * @brief multiplyDigits applies multiplication for vector of digits and int
- * @param left
- * @param right
- * @return result
+ * @brief Multiplies vector of digits and int
  */
 std::vector<char> multiplyDigits(std::vector<char> &num1, int num2) {
     std::vector<char> result = num1;
@@ -216,12 +207,9 @@ std::vector<char> multiplyDigits(std::vector<char> &num1, int num2) {
 }
 
 /**
- * @brief isBiggerDigits applies subtraction for vectors of digits
- * where the second number will be multiplied until has max basis rank
- * @param left
- * @param right
+ * @brief Subtracts vectors of digits,
+ * where second number will be aligned to beginning of first
  * @param side points to number of digits from beginning of left var to delete
- * @return result
  */
 void leftSubstract(std::vector<char> &num1, std::vector<char> &num2, int side) {
     for (int i = 0; i < num2.size(); i++) {
