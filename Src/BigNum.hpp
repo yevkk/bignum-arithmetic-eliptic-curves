@@ -22,6 +22,7 @@ public:
     BigNum& operator=(const BigNum& that) = default;
 
     friend std::string to_string(const BigNum& num);
+    friend BigNum from_string(std::string_view str);
 
     friend bool operator<(const BigNum& left, const BigNum& right);
     friend bool operator<=(const BigNum& left, const BigNum& right);
@@ -38,9 +39,6 @@ public:
     friend BigNum operator+(const BigNum& left, const BigNum& right);
 
     friend BigNum operator*(const BigNum& left, int right);
-
-    /// TODO
-    friend BigNum operator*(const BigNum& left, const BigNum& right);
 
     friend BigNum operator%(const BigNum& left, const BigNum& right);
 
@@ -77,12 +75,13 @@ public:
     friend std::vector<char> toOneDigit(const BigNum& num);
 
     /**
-      * @brief Converts vector of digits to number
-      */
+     * @brief Converts vector of digits to number
+     */
     friend BigNum toBigNum(std::vector<char>& num_digits);
 
 private:
-    std::vector<int> _digits; ///< Array of coefficients in representation
+    ///< Array of coefficients in representation
+    std::vector<int> _digits;
 };
 
 template<typename OStream>
