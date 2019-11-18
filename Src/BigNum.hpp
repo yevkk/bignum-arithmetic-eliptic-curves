@@ -40,10 +40,12 @@ public:
 
     friend BigNum operator*(const BigNum& left, int right);
 
+    friend BigNum operator* (const BigNum &left, const BigNum &right);
+
     friend BigNum operator%(const BigNum& left, const BigNum& right);
 
     template<typename OStream>
-    friend OStream& operator<<(OStream& os, const BigNum & num);
+    friend OStream& operator<<(OStream& os, const BigNum& num);
     template<typename IStream>
     friend IStream& operator>>(IStream& is, BigNum& num);
 
@@ -88,7 +90,10 @@ template<typename OStream>
 OStream& operator<<(OStream& os, const BigNum& num)
 {
     for (auto it = num._digits.rbegin(); it != num._digits.rend(); ++it) {
-        os << *it;
+        std::string s(std::to_string(*it));
+        while (s.size() != 9 && it != num._digits.rbegin())
+            s.insert(0, "0");
+        os << s;
     }
     return os;
 }
