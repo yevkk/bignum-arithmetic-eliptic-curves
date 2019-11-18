@@ -204,66 +204,49 @@ auto addDigits (const std::vector <char> &lhs, const std::vector <char> &rhs) {
 
 namespace {
 
-    inline std::vector<int> naiveMultipl (const std::vector<int>& lhs, const std::vector<int>& rhs) {
+    using int64 = int64_t;
 
-        std::vector <int> result (lhs.size() + rhs.size());
+     std::vector<int64> naiveMultipl (const std::vector<int64>& lhs, const std::vector<int64>& rhs) {
 
-        for (int i = 0; i < lhs.size(); ++i){
-            uint64_t addition{};
-            for (int j = 0; j < rhs.size(); ++j) {
-                uint64_t temp = static_cast<uint64_t>(lhs[i]) * rhs[j] + addition + result[i + j];
-                addition = temp / NUM_BASE;
-                result[i + j] = temp % NUM_BASE;
-            }
-            result [i + rhs.size()] += addition;
-        }
-        if (result.back() >= NUM_BASE) {
-            auto temp = result.back();
-            result.back() = temp % NUM_BASE;
-            result.push_back(temp / NUM_BASE);
-        }
+        std::vector <int64> result (lhs.size() + rhs.size());
 
-        if (result.back() == 0)
-            result.pop_back();
+        for (int i = 0; i < lhs.size(); ++i)
+            for (int j = 0; j < rhs.size(); ++j)
+                result[i + j] = lhs[i] + rhs[i];
 
         return result;
     }
 
-    inline std::vector<int> addVectors (const std::vector<int>& lhs, const std::vector<int>& rhs) {
+    inline std::vector<int64> addVectors (const std::vector<int64>& lhs, const std::vector<int64>& rhs) {
 
         const auto length = lhs.size();
-        std::vector<int> result(length + 1);
-        int addition {};
+        std::vector<int64> result(length);
 
-        for (int i = 0; i < length; ++i) {
+        for (int i = 0; i < length; ++i)
             result[i] += lhs[i] + rhs[i];
-            addition = result[i] / NUM_BASE;
-            result[i] %= NUM_BASE;
-        }
-        result[length] += addition;
+
         return result;
     }
 
-    inline std::vector<int> substractVectors (const std::vector<int>& lhs, const std::vector<int>& rhs) {
+    inline std::vector<int64> substractVectors (const std::vector<int64>& lhs, const std::vector<int64>& rhs) {
 
         auto result = lhs;
 
-        for (int i = 0; i < rhs.size(); ++i) {
-            if (result[i] < rhs[i]) {
-                result[i] = result[i] - rhs[i] + NUM_BASE;
-                result[i + 1] -= 1;
-            } else {
-                result[i] -= - rhs[i];
-            }
-        }
-        if (lhs.size() > rhs.size()) {
-            if (result[rhs.size()] < 0) {
-                result[rhs.size()] += NUM_BASE;
-                result[rhs.size() + 1] -= 1;
-            }
-        }
+        for (int i = 0; i < rhs.size(); ++i)
+            result[i] -= rhs[i];
+
         return result;
     }
+
+    inline void finalize (std::vector <int64>& num) {
+        int64 addition{};
+        for (auto i = 0; i < num.size(); ++i) {
+            num[i] += addition;
+            addition = num[i] / NUM_BASE;
+            num[i] = num[i] % NUM_BASE;
+        }
+        num.back() += addition;
+     }
 
     /**
      * @brief Minimum size of vector of digits to do
@@ -277,7 +260,7 @@ namespace {
      *        like (A * 10 + B) * (C * 10 + D) = AC * 100 + BD + ((A + B) * (C + D) - AC - BD) * 10
      */
 
-    std::vector <int> karatsuba (std::vector <int> lhs, std::vector<int> rhs) {
+    std::vector <int64> karatsuba (std::vector <int64> lhs, std::vector<int64> rhs) {
 
         if (lhs.size() <= MIN_FOR_KARATSUBA || rhs.size() <= MIN_FOR_KARATSUBA)
             return naiveMultipl(lhs, rhs);
@@ -288,18 +271,18 @@ namespace {
             lhs.push_back(0);
 
         const auto length = lhs.size();
-        std::vector <int> result (length * 2);
+        std::vector <int64> result (length * 2);
 
-        std::vector <int> lhsL (lhs.begin() + length / 2, lhs.end());
-        std::vector <int> rhsL (rhs.begin() + length / 2, rhs.end());
-        std::vector <int> lhsR (lhs.begin(), lhs.begin() + length / 2);
-        std::vector <int> rhsR (rhs.begin(), rhs.begin() + length / 2);
+        std::vector <int64> lhsL (lhs.begin() + length / 2, lhs.end());
+        std::vector <int64> rhsL (rhs.begin() + length / 2, rhs.end());
+        std::vector <int64> lhsR (lhs.begin(), lhs.begin() + length / 2);
+        std::vector <int64> rhsR (rhs.begin(), rhs.begin() + length / 2);
 
         auto c1 = karatsuba(lhsL, rhsL);
         auto c2 = karatsuba(lhsR, rhsR);
 
-        std::vector <int> lhsLR = addVectors(lhsL, lhsR);
-        std::vector <int> rhsLR = addVectors(rhsL, rhsR);
+        std::vector <int64> lhsLR = addVectors(lhsL, lhsR);
+        std::vector <int64> rhsLR = addVectors(rhsL, rhsR);
 
         auto c3 = karatsuba(lhsLR, rhsLR);
 
@@ -314,21 +297,9 @@ namespace {
         for (auto i = length; i < length * 2; ++i)
             result[i] = c1[i - length];
 
-        int addition{};
         for (auto i = length / 2; i < length + length / 2; ++i) {
-            uint64_t temp = c3[i - length / 2] + addition + result[i];
-            addition = temp / NUM_BASE;
-            result[i] = temp % NUM_BASE;
+            result[i] = c3[i - length / 2];
         }
-
-        result[length + length / 2] += addition;
-        if (result[length + length / 2] > NUM_BASE) {
-            result [length + length / 2 + 1] += result[length + length / 2] / NUM_BASE;
-            result [length + length / 2] %= NUM_BASE;
-        }
-
-        while (result.back() == 0)
-            result.pop_back();
 
         return result;
     }
@@ -337,8 +308,14 @@ namespace {
 
 BigNum operator* (const BigNum &lhs, const BigNum &rhs) {
 
+    std::vector <int64> lhsTemp (lhs._digits.begin(), lhs._digits.end());
+    std::vector <int64> rhsTemp (rhs._digits.begin(), rhs._digits.end());
+    auto nums = karatsuba(lhsTemp, rhsTemp);
+    finalize(nums);
+    std::reverse(nums.begin(), nums.end());
+
     BigNum result;
-    result._digits = karatsuba(lhs._digits, rhs._digits);
+    result._digits = std::vector <int> (nums.begin(), nums.end());
     return result;
 }
 
