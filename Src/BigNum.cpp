@@ -1,6 +1,5 @@
 #include <BigNum.hpp>
 
-
 namespace {
 /**
  * @brief Points to the max value BigNum array's cell can hold,
@@ -202,122 +201,6 @@ auto addDigits (const std::vector <char> &lhs, const std::vector <char> &rhs) {
 
 }
 
-namespace {
-
-    using int64 = int64_t;
-
-     std::vector<int64> naiveMultipl (const std::vector<int64>& lhs, const std::vector<int64>& rhs) {
-
-        std::vector <int64> result (lhs.size() + rhs.size());
-
-        for (int i = 0; i < lhs.size(); ++i)
-            for (int j = 0; j < rhs.size(); ++j)
-                result[i + j] = lhs[i] + rhs[i];
-
-        return result;
-    }
-
-    inline std::vector<int64> addVectors (const std::vector<int64>& lhs, const std::vector<int64>& rhs) {
-
-        const auto length = lhs.size();
-        std::vector<int64> result(length);
-
-        for (int i = 0; i < length; ++i)
-            result[i] += lhs[i] + rhs[i];
-
-        return result;
-    }
-
-    inline std::vector<int64> substractVectors (const std::vector<int64>& lhs, const std::vector<int64>& rhs) {
-
-        auto result = lhs;
-
-        for (int i = 0; i < rhs.size(); ++i)
-            result[i] -= rhs[i];
-
-        return result;
-    }
-
-    inline void finalize (std::vector <int64>& num) {
-        int64 addition{};
-        for (auto i = 0; i < num.size(); ++i) {
-            num[i] += addition;
-            addition = num[i] / NUM_BASE;
-            num[i] = num[i] % NUM_BASE;
-        }
-        num.back() += addition;
-     }
-
-    /**
-     * @brief Minimum size of vector of digits to do
-     *        fast multiplication instead of naive approach
-     */
-
-    constexpr inline int MIN_FOR_KARATSUBA = 10;
-
-    /*
-     * @brief Karatsuba's method implements fast multiplication of numbers [AB] and [CD] like
-     *        like (A * 10 + B) * (C * 10 + D) = AC * 100 + BD + ((A + B) * (C + D) - AC - BD) * 10
-     */
-
-    std::vector <int64> karatsuba (std::vector <int64> lhs, std::vector<int64> rhs) {
-
-        if (lhs.size() <= MIN_FOR_KARATSUBA || rhs.size() <= MIN_FOR_KARATSUBA)
-            return naiveMultipl(lhs, rhs);
-
-        while (lhs.size() > rhs.size())
-            rhs.push_back(0);
-        while (rhs.size() > lhs.size())
-            lhs.push_back(0);
-
-        const auto length = lhs.size();
-        std::vector <int64> result (length * 2);
-
-        std::vector <int64> lhsL (lhs.begin() + length / 2, lhs.end());
-        std::vector <int64> rhsL (rhs.begin() + length / 2, rhs.end());
-        std::vector <int64> lhsR (lhs.begin(), lhs.begin() + length / 2);
-        std::vector <int64> rhsR (rhs.begin(), rhs.begin() + length / 2);
-
-        auto c1 = karatsuba(lhsL, rhsL);
-        auto c2 = karatsuba(lhsR, rhsR);
-
-        std::vector <int64> lhsLR = addVectors(lhsL, lhsR);
-        std::vector <int64> rhsLR = addVectors(rhsL, rhsR);
-
-        auto c3 = karatsuba(lhsLR, rhsLR);
-
-        c3 = substractVectors(c3, addVectors(c2, c1));
-        std::cout << std::endl;
-//        for (auto & i : c3)
-//            std::cout << i << ' ' << std::flush;
-
-        c2.resize(length * 2);
-        result = std::move(c2);
-
-        for (auto i = length; i < length * 2; ++i)
-            result[i] = c1[i - length];
-
-        for (auto i = length / 2; i < length + length / 2; ++i) {
-            result[i] = c3[i - length / 2];
-        }
-
-        return result;
-    }
-}
-
-
-BigNum operator* (const BigNum &lhs, const BigNum &rhs) {
-
-    std::vector <int64> lhsTemp (lhs._digits.begin(), lhs._digits.end());
-    std::vector <int64> rhsTemp (rhs._digits.begin(), rhs._digits.end());
-    auto nums = karatsuba(lhsTemp, rhsTemp);
-    finalize(nums);
-    std::reverse(nums.begin(), nums.end());
-
-    BigNum result;
-    result._digits = std::vector <int> (nums.begin(), nums.end());
-    return result;
-}
 
 /**
  * @brief Compares vector of digits with operator <
