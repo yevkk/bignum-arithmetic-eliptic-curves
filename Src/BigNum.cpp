@@ -332,4 +332,25 @@ BigNum operator%(const BigNum &left, const BigNum &right) {
     BigNum result = extract(left, right).second;
     return result;
 }
+
+namespace {
+
+    /*
+     *  @return Pair of x, y
+     *          ax + by = gcd(a, b)
+     */
+    std::pair <BigNum, BigNum> extendedEuclid (const BigNum& a, const BigNum& b) {
+
+        if (b == BigNum("0"))
+            return std::make_pair(BigNum("1"), BigNum("0"));
+        auto [intPart, remainder] = extract(a, b);
+        auto [x, y] = extendedEuclid(b, remainder);
+        return std::make_pair(y, x - intPart * y);
+    }
+}
+
+
+BigNum inverse(const BigNum& num, const BigNum& mod) {
+    return extendedEuclid(num, mod).first;
+}
 }

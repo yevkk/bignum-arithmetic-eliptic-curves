@@ -71,6 +71,7 @@ public:
      */
     friend std::pair<BigNum, BigNum> extract(const BigNum& first, const BigNum& second);
 
+    friend BigNum inverse(const BigNum& num, const BigNum& mod);
      /**
       * @brief Converts number to vector of its digits
       * @return Vector of digits
