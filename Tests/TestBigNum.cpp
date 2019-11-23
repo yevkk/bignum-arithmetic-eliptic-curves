@@ -1,6 +1,7 @@
 #include <BigNum.hpp>
 #include <sstream>
 
+
 #include "catch.hpp"
 
 TEST_CASE("Big numbers test", "[BigNum]") {
@@ -224,7 +225,6 @@ TEST_CASE("Big numbers test", "[BigNum]") {
         SECTION("Common") {
             const lab::BigNum a("999999999");
             const lab::BigNum b("999999999");
-            a * b == lab::BigNum("999999998000000001");
             REQUIRE(a * b == lab::BigNum("999999998000000001"));
         }
 
@@ -260,10 +260,26 @@ TEST_CASE("Big numbers test", "[BigNum]") {
         }
     }
 
+    SECTION("Modulo multiplication") {
+
+        const auto a = 4241229841928441249124921409124091221_bn;
+        const auto b = 12901092091309210942109410951309019490_bn;
+        const auto mod = 120130924091094109_bn;
+        REQUIRE(multiply(a, b, mod) == 88191807529973443_bn);
+    }
+
     SECTION("Inverse number") {
 
-        const lab::BigNum a("100");
-        const lab::BigNum mod("21");
-        REQUIRE(inverse(a, mod) == lab::BigNum("4"));
+        {
+            const auto a = 1442141324241124_bn;
+            const auto mod = 23321723123_bn;
+
+            REQUIRE(inverted(a, mod, lab::BigNum::InversionPolicy::Euclid) == 515791030_bn);
+        }
+        {
+            const auto a = 1442141324241124_bn;
+            const auto mod = 191_bn;
+            REQUIRE(inverted(a, mod, lab::BigNum::InversionPolicy::Fermat) == 12_bn);
+        }
     }
 }
