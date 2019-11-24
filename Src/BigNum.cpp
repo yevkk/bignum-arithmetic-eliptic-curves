@@ -168,6 +168,8 @@ BigNum operator*(const BigNum &left, int right) {
     } else {
         result._digits.push_back(addition);
     }
+    while (result._digits.back() == 0)
+        result._digits.pop_back();
     return result;
 }
 
