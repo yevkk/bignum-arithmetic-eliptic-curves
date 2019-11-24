@@ -113,8 +113,7 @@ BigNum operator-(const BigNum &left, const BigNum &right) {
         if (result._digits[curr_pos] < right._digits[curr_pos]) {
             result._digits[curr_pos] = result._digits[curr_pos] - right._digits[curr_pos] + NUM_BASE;
             result._digits[curr_pos + 1] -= 1;
-        }
-        else {
+        } else {
             result._digits[curr_pos] = result._digits[curr_pos] - right._digits[curr_pos];
         }
     }
@@ -390,9 +389,11 @@ namespace {
                                               const IntVectorView& rhs) {
         std::vector<int64_t> result(lhs.size() + rhs.size());
 
-        for (int i = 0; i < lhs.size(); ++i)
-            for (int j = 0; j < rhs.size(); ++j)
+        for (int i = 0; i < lhs.size(); ++i) {
+            for (int j = 0; j < rhs.size(); ++j) {
                 result[i + j] += lhs[i] * rhs[j];
+            }
+        }
 
         return result;
     }
@@ -459,8 +460,9 @@ namespace {
      */
     inline void finalize(std::vector<int64_t>& num) {
         for (auto i = 0; i < num.size(); ++i) {
-            if (i != num.size() - 1)
+            if (i != num.size() - 1) {
                 num[i + 1] += num[i] / NUM_BASE;
+            }
             num[i] %= NUM_BASE;
         }
     }
@@ -487,23 +489,29 @@ namespace {
     }
 
     bool isPrime(const BigNum& num) {
-        if (num <= 1_bn)
+        if (num <= 1_bn) {
             return false;
-        if (num <= 3_bn)
+        }
+        if (num <= 3_bn) {
             return true;
+        }
 
-        if (num % 2_bn == 0_bn || num % 3_bn == 0_bn)
+        if (num % 2_bn == 0_bn || num % 3_bn == 0_bn) {
             return false;
+        }
 
-        for (auto i = 5_bn; i * i <= num; i = i + 6_bn)
-            if (num % i == 0_bn || num % (i + 2_bn) == 0_bn)
+        for (auto i = 5_bn; i * i <= num; i = i + 6_bn) {
+            if (num % i == 0_bn || num % (i + 2_bn) == 0_bn) {
                 return false;
+            }
+        }
         return true;
     }
 
     BigNum pow(const BigNum& num, const BigNum& degree, const BigNum& mod) {
-        if (degree == 0_bn)
+        if (degree == 0_bn) {
             return 1_bn;
+        }
 
         auto result = pow(num, extract(degree, 2_bn).first, mod) % mod;
         result = (result * result) % mod;
@@ -524,8 +532,9 @@ BigNum operator* (const BigNum& lhs, const BigNum& rhs) {
                           IntVectorView(rhsTemp.begin(), rhsTemp.end()));
     finalize(nums);
 
-    while (nums.back() == 0)
+    while (nums.back() == 0) {
         nums.pop_back();
+    }
 
     BigNum result;
     result._digits = std::vector<int>(nums.begin(), nums.end());
@@ -547,10 +556,12 @@ BigNum inverted(const BigNum &num, const BigNum& mod,
             inverted_._digits.pop_back();
         return inverted_;
     } else {
-        if (!isPrime(mod))
+        if (!isPrime(mod)) {
             throw std::invalid_argument("Mod must be prime.");
-        if (gcd(num, mod) != 1_bn)
+        }
+        if (gcd(num, mod) != 1_bn) {
             throw std::invalid_argument("Nums must be coprime.");
+        }
         return pow (num, mod - 2_bn, mod);
     }
 }
