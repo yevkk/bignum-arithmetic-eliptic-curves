@@ -336,22 +336,24 @@ namespace {
     /*
     *  @brief Class for read-only range of elements of some std::vector.
     */
-    template <typename Iter>
+    template <typename T>
     class ArrayView  {
     public:
+        template <typename Iter,
+                  typename = std::enable_if <std::is_same_v<typename std::iterator_traits<Iter>::iterator_category,
+                                                            std::random_access_iterator_tag>>>
         explicit ArrayView(Iter begin,
                            Iter end)
-                : m_begin(std::move(begin)),
-                  m_end(std::move(end)),
-                  m_size(std::distance(m_begin, m_end)) {
+                         : m_begin(&(*begin)),
+                           m_size(end - begin) {
         }
 
-        const Iter begin() const {
+        const T* begin() const {
             return m_begin;
         }
 
-        const Iter end() const {
-            return m_end;
+        const T* end() const {
+            return m_begin + m_size;
         }
 
         const auto size() const {
@@ -359,20 +361,20 @@ namespace {
         }
 
         const auto& operator[](std::size_t n) const {
+            if (n >= m_size)
+                throw std::out_of_range("Out of view range.");
             return *(m_begin + n);
         }
 
     private:
-        Iter m_begin;
-        Iter m_end;
+        const T* m_begin;
         std::size_t m_size;
     };
 
     template <typename Iter>
-    ArrayView (Iter begin, Iter end) -> ArrayView<Iter>;
+    ArrayView (Iter begin, Iter end) -> ArrayView<typename std::iterator_traits<Iter>::value_type>;
 
-    using IntVectorView = ArrayView<std::vector<int64_t>::iterator>;
-
+    using IntVectorView = ArrayView<int64_t>;
 
     /**
      *  @brief Returns nearest number bigger than n that is degree of two
