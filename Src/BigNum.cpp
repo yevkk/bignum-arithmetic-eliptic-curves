@@ -165,8 +165,7 @@ BigNum operator*(const BigNum &left, int right) {
     if (addition >= NUM_BASE) {
         result._digits.push_back(addition % NUM_BASE);
         result._digits.push_back(addition / NUM_BASE);
-    }
-    else if (addition > 0 && addition < NUM_BASE) {
+    } else {
         result._digits.push_back(addition);
     }
     return result;
@@ -188,8 +187,7 @@ auto addDigits (const std::vector <char> &lhs, const std::vector <char> &rhs) {
             addition = result[i] / BASE;
             result[i] %= BASE;
         }
-    }
-    else {
+    } else {
         result = lhs;
         int addition{};
         for (std::size_t i = 0; i < rhs.size(); ++i) {
@@ -199,9 +197,7 @@ auto addDigits (const std::vector <char> &lhs, const std::vector <char> &rhs) {
         }
     }
     return result;
-
 }
-
 
 /**
  * @brief Compares vector of digits with operator <
@@ -338,30 +334,29 @@ namespace {
     /*
     *  @brief Class for read-only range of elements of some std::vector.
     */
-
     template <typename Iter>
-    class VectorView {
+    class ArrayView  {
     public:
-        explicit VectorView (Iter begin,
-                             Iter end)
+        explicit ArrayView(Iter begin,
+                           Iter end)
                 : m_begin(std::move(begin)),
                   m_end(std::move(end)),
                   m_size(std::distance(m_begin, m_end)) {
         }
 
-        const Iter begin () const {
+        const Iter begin() const {
             return m_begin;
         }
 
-        const Iter end () const {
+        const Iter end() const {
             return m_end;
         }
 
-        const auto size () const {
+        const auto size() const {
             return m_size;
         }
 
-        const auto& operator[] (std::size_t n) const {
+        const auto& operator[](std::size_t n) const {
             return *(m_begin + n);
         }
 
@@ -372,20 +367,19 @@ namespace {
     };
 
     template <typename Iter>
-    VectorView (Iter begin, Iter end) -> VectorView<Iter>;
+    ArrayView (Iter begin, Iter end) -> ArrayView<Iter>;
 
-    using IntVectorView = VectorView<std::vector<int64_t>::iterator>;
+    using IntVectorView = ArrayView<std::vector<int64_t>::iterator>;
 
 
     /**
      *  @brief Returns nearest number bigger than n that is degree of two
     */
-
-    inline unsigned upperLog2 (unsigned n) {
+    inline unsigned upperLog2(unsigned n) {
         return std::pow(2, static_cast<int>(std::log2(n)) + 1);
     }
 
-    std::vector<int64_t> naiveMultiplication (const IntVectorView& lhs,
+    std::vector<int64_t> naiveMultiplication(const IntVectorView& lhs,
                                               const IntVectorView& rhs) {
         std::vector<int64_t> result(lhs.size() + rhs.size());
 
@@ -402,13 +396,12 @@ namespace {
      */
     constexpr inline int MIN_FOR_KARATSUBA = 32;
 
-
     /*
      * @brief Karatsuba's method implements fast multiplication of numbers [AB] and [CD] like
      *        like (A * 10 + B) * (C * 10 + D) = AC * 100 + BD + ((A + B) * (C + D) - AC - BD) * 10
      */
 
-    std::vector<int64_t> karatsuba (const IntVectorView& lhs, const IntVectorView& rhs) {
+    std::vector<int64_t> karatsuba(const IntVectorView& lhs, const IntVectorView& rhs) {
 
         if (lhs.size() <= MIN_FOR_KARATSUBA)
             return naiveMultiplication(lhs, rhs);
@@ -416,13 +409,13 @@ namespace {
         const auto length = lhs.size();
         std::vector<int64_t> result(length * 2);
 
-        VectorView lhsL(lhs.begin() + length / 2, lhs.end());
-        VectorView rhsL(rhs.begin() + length / 2, rhs.end());
-        VectorView lhsR(lhs.begin(), lhs.begin() + length / 2);
-        VectorView rhsR(rhs.begin(), rhs.begin() + length / 2);
+        ArrayView lhsL(lhs.begin() + length / 2, lhs.end());
+        ArrayView rhsL(rhs.begin() + length / 2, rhs.end());
+        ArrayView lhsR(lhs.begin(), lhs.begin() + length / 2);
+        ArrayView rhsR(rhs.begin(), rhs.begin() + length / 2);
 
-        auto c1 = karatsuba(lhsL, rhsL);
-        auto c2 = karatsuba(lhsR, rhsR);
+        const auto c1 = karatsuba(lhsL, rhsL);
+        const auto c2 = karatsuba(lhsR, rhsR);
 
         std::vector<int64_t> lhsLR(length / 2);
         std::vector<int64_t> rhsLR(length / 2);
@@ -435,14 +428,17 @@ namespace {
         auto c3 = karatsuba(IntVectorView(lhsLR.begin(), lhsLR.end()),
                             IntVectorView(rhsLR.begin(), rhsLR.end()));
 
-        for (auto i = 0; i < length; ++i)
+        for (auto i = 0; i < length; ++i){
             c3[i] -= c2[i] + c1[i];
+        }
 
-        for (auto i = 0; i < length; ++i)
+        for (auto i = 0; i < length; ++i) {
             result[i] = c2[i];
+        }
 
-        for (auto i = length; i < length * 2; ++i)
+        for (auto i = length; i < length * 2; ++i) {
             result[i] = c1[i - length];
+        }
 
         for (auto i = length / 2; i < length + length / 2; ++i) {
             result[i] += c3[i - length / 2];
@@ -454,16 +450,59 @@ namespace {
     /*
      * @brief Normalizing number ceils to NUM_BASE
      */
-
-    inline void finalize (std::vector<int64_t>& num) {
+    inline void finalize(std::vector<int64_t>& num) {
         for (auto i = 0; i < num.size(); ++i) {
             if (i != num.size() - 1)
                 num[i + 1] += num[i] / NUM_BASE;
             num[i] %= NUM_BASE;
         }
     }
-}
 
+    /*
+    *  @return Pair of x, y
+    *          ax + by = gcd(a, b)
+    */
+    std::pair<BigNum, BigNum> extendedEuclid(const BigNum& a, const BigNum& b, const BigNum& mod) {
+
+        if (b == BigNum("0")) {
+            return std::pair(BigNum("1"), BigNum("0"));
+        }
+        const auto [int_part, remainder] = extract(a, b);
+        const auto [x, y] = extendedEuclid(b, remainder, mod);
+        return std::pair(y, subtract(x, (int_part * y) % mod, mod));
+    }
+
+    BigNum gcd(const BigNum& lhs, const BigNum& rhs) {
+        if (lhs == BigNum("0")) {
+            return rhs;
+        }
+        return gcd (rhs % lhs, lhs);
+    }
+
+    bool isPrime(const BigNum& num) {
+        if (num <= 1_bn)
+            return false;
+        if (num <= 3_bn)
+            return true;
+
+        if (num % 2_bn == 0_bn || num % 3_bn == 0_bn)
+            return false;
+
+        for (auto i = 5_bn; i * i <= num; i = i + 6_bn)
+            if (num % i == 0_bn || num % (i + 2_bn) == 0_bn)
+                return false;
+        return true;
+    }
+
+    BigNum pow(const BigNum& num, const BigNum& degree, const BigNum& mod) {
+        if (degree == 0_bn)
+            return 1_bn;
+
+        auto result = pow(num, extract(degree, 2_bn).first, mod) % mod;
+        result = (result * result) % mod;
+        return degree % 2_bn == 0_bn ? result : (result * num) % mod;
+    }
+}
 
 BigNum operator* (const BigNum& lhs, const BigNum& rhs) {
 
@@ -486,85 +525,29 @@ BigNum operator* (const BigNum& lhs, const BigNum& rhs) {
     return result;
 }
 
-//namespace {
-//    BigNum montgomery (const BigNum& lhs, const BigNum& rhs, const BigNum& mod) {
-//        return BigNum{};
-//        //TODO
-//    }
-//}
-
-BigNum multiply (const BigNum& lhs, const BigNum& rhs, const BigNum& mod) {
+BigNum multiply(const BigNum& lhs, const BigNum& rhs, const BigNum& mod) {
         return (lhs % mod * rhs % mod) % mod;
 }
 
-namespace {
+BigNum inverted(const BigNum &num, const BigNum& mod,
+                                   BigNum::InversionPolicy policy = BigNum::InversionPolicy::Euclid){
 
-    /*
-     *  @return Pair of x, y
-     *          ax + by = gcd(a, b)
-     */
-    std::pair<BigNum, BigNum> extendedEuclid (const BigNum& a, const BigNum& b, const BigNum& mod) {
-
-        if (b == BigNum("0"))
-            return std::make_pair(BigNum("1"), BigNum("0"));
-        auto [int_part, remainder] = extract(a, b);
-        auto [x, y] = extendedEuclid(b, remainder, mod);
-        return std::make_pair(y, subtract(x, (int_part * y) % mod, mod));
-    }
-
-    BigNum gcd (const BigNum& lhs, const BigNum& rhs) {
-        if (lhs == BigNum("0"))
-            return rhs;
-        return gcd (rhs % lhs, lhs);
-    }
-
-    bool isPrime (const BigNum& num) {
-        if (num <= 1_bn)
-            return false;
-        if (num <= 3_bn)
-            return true;
-
-        if (num % 2_bn == 0_bn || num % 3_bn == 0_bn)
-            return false;
-
-        for (auto i = 5_bn; i * i <= num; i = i + 6_bn)
-            if (num % i == 0_bn || num % (i + 2_bn) == 0_bn)
-                return false;
-        return true;
-    }
-
-    BigNum pow (const BigNum& num, const BigNum& degree, const BigNum& mod) {
-        if (degree == 0_bn)
-            return 1_bn;
-
-        auto result = pow(num, extract(degree, 2_bn).first, mod) % mod;
-        result = (result * result) % mod;
-        return degree % 2_bn == 0_bn ? result : (result * num) % mod;
+    if (policy == BigNum::InversionPolicy::Euclid) {
+        if (gcd(num, mod) != 1_bn)
+            throw std::invalid_argument("Nums must be coprime.");
+        auto inverted_ = extendedEuclid(num, mod, mod).first;
+        while (inverted_._digits.back() == 0)
+            inverted_._digits.pop_back();
+        return inverted_;
+    } else {
+        if (!isPrime(mod))
+            throw std::invalid_argument("Mod must be prime.");
+        if (gcd(num, mod) != 1_bn)
+            throw std::invalid_argument("Nums must be coprime.");
+        return pow (num, mod - 2_bn, mod);
     }
 }
-
-
-    BigNum inverted(BigNum num, const BigNum& mod,
-                                BigNum::InversionPolicy policy = BigNum::InversionPolicy::Euclid){
-
-        if (policy == BigNum::InversionPolicy::Euclid) {
-            if (gcd(num, mod) != 1_bn)
-                throw std::invalid_argument("Nums must be coprime.");
-            auto inverted_ = extendedEuclid(num, mod, mod).first;
-            while (inverted_._digits.back() == 0)
-                inverted_._digits.pop_back();
-            return inverted_;
-        }
-        else {
-            if (!isPrime(mod))
-                throw std::invalid_argument("Mod must be prime.");
-            if (gcd(num, mod) != 1_bn)
-                throw std::invalid_argument("Nums must be coprime.");
-            return pow (num, mod - 2_bn, mod);
-        }
-    }
 }
-
 
 lab::BigNum operator"" _bn(const char* str) {
     return lab::BigNum(str);

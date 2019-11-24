@@ -7,14 +7,8 @@
 #include <cmath>
 
 namespace lab {
-//
-//    class BigNum;
-//    enum class InversionPolicy;
-//
-//    BigNum inverted(BigNum num, const BigNum& mod,
-//            BigNum::InversionPolicy policy = BigNum::InversionPolicy::Euclid);
 
-    /**
+/**
  * @brief Class for holding big positive integers
  */
 class BigNum
@@ -72,32 +66,30 @@ public:
     friend BigNum subtract(const BigNum& first, const BigNum& second, const BigNum& mod);
 
 
-    //  enum ModuleMultiplicationPolicy {PreModule, PostModule};  //TODO
-
-    /*
+    /**
      *  @brief Multiplication of two numbers by Karatsuba or Montgomery algorithm
      */
-
     friend BigNum multiply (const BigNum& lhs, const BigNum& rhs, const BigNum& mod);
 
     /**
     * @brief Division of two numbers
     * @return Pair of numbers, the first is an integer, the second is a remainder of division
     */
-
     friend std::pair<BigNum, BigNum> extract(const BigNum& first, const BigNum& second);
 
-    /*
-     *  @return Inverted number to num in group modulo mod
-     */
-
-    /*
+    /**
      *  @brief Euclid method requires number and module to be coprime,
      *         Fermat method - to be mod prime
      */
-    enum class InversionPolicy {Euclid, Fermat};
+    enum class InversionPolicy {
+        Euclid,
+        Fermat
+    };
 
-    friend BigNum inverted(BigNum num, const BigNum& mod, InversionPolicy policy);
+    /**
+     *  @return Inverted number to num in group modulo mod
+     */
+    friend BigNum inverted(const BigNum &num, const BigNum& mod, InversionPolicy policy);
 
 
      /**
@@ -136,6 +128,6 @@ IStream& operator>>(IStream& is, BigNum& num)
     num = BigNum(num_str);
     return is;
 }
-}// namespace lab
+} // namespace lab
 
 lab::BigNum operator"" _bn(const char* str);
