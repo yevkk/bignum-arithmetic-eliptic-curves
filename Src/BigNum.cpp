@@ -1,5 +1,7 @@
 #include <BigNum.hpp>
 
+#include <iterator>
+
 namespace lab {
 
 namespace {
