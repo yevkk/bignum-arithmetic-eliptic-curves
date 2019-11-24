@@ -1,4 +1,5 @@
 #include <BigNum.hpp>
+
 #include <sstream>
 
 #include "catch.hpp"
@@ -7,7 +8,7 @@ TEST_CASE("Big numbers test", "[BigNum]") {
     SECTION( "Streaming a BigNum" ) {
         lab::BigNum num;
 
-        SECTION( "normal" ) {
+        SECTION("normal") {
             const std::string in = "1234567890";
             std::istringstream iss(in);
             iss >> num;
@@ -216,6 +217,43 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             const lab::BigNum num2("185778053217122680661300192787661119590921642");
             REQUIRE(extract(num1, num2).first == lab::BigNum("268874922880981921356444837383660471746363637968708614244631874788091837363196835"));
             REQUIRE(extract(num1, num2).second == lab::BigNum("1540141020615185186336802365801588561744233"));
+        }
+    }
+
+    SECTION("Multiplication") {
+
+        SECTION("Common") {
+            const auto a = 999999999_bn;
+            const auto b = 999999999_bn;
+            REQUIRE(a * b == 999999998000000001_bn);
+        }
+
+        SECTION ("Rare") {
+            const auto a = 99999123456789098765432112345678909876543219999_bn;
+            const auto b = 9999101010101000010130929493583285892397887897238874399999_bn;
+            REQUIRE(a * b == 999901336365994481304641755778280969957261726037535427297722733918150118427240475620078108944452582380001_bn);
+        }
+    }
+
+    SECTION("Modulo multiplication") {
+        const auto a = 4241229841928441249124921409124091221_bn;
+        const auto b = 12901092091309210942109410951309019490_bn;
+        const auto mod = 120130924091094109_bn;
+        REQUIRE(multiply(a, b, mod) == 88191807529973443_bn);
+    }
+
+    SECTION("Inverse number") {
+
+        {
+            const auto a = 1442141324241124_bn;
+            const auto mod = 23321723123_bn;
+
+            REQUIRE(inverted(a, mod, lab::BigNum::InversionPolicy::Euclid) == 515791030_bn);
+        }
+        {
+            const auto a = 1442141324241124_bn;
+            const auto mod = 191_bn;
+            REQUIRE(inverted(a, mod, lab::BigNum::InversionPolicy::Fermat) == 12_bn);
         }
     }
 }
