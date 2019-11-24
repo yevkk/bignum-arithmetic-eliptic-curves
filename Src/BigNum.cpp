@@ -341,7 +341,8 @@ namespace {
     public:
         template <typename Iter,
                   typename = std::enable_if <std::is_same_v<typename std::iterator_traits<Iter>::iterator_category,
-                                                            std::random_access_iterator_tag>>>
+                                                            std::random_access_iterator_tag>
+                                          || std::is_same_v <Iter, T*>>>
         explicit ArrayView(Iter begin,
                            Iter end)
                          : m_begin(&(*begin)),
