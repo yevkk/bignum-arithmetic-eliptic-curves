@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <cmath>
 
 namespace lab {
 
@@ -40,6 +41,8 @@ public:
 
     friend BigNum operator*(const BigNum& left, int right);
 
+    friend BigNum operator* (const BigNum &left, const BigNum &right);
+
     friend BigNum operator%(const BigNum& left, const BigNum& right);
 
     template<typename OStream>
@@ -62,11 +65,32 @@ public:
      */
     friend BigNum subtract(const BigNum& first, const BigNum& second, const BigNum& mod);
 
+
     /**
-     * @brief Division of two numbers
-     * @return Pair of numbers, the first is an integer, the second is a remainder of division
+     *  @brief Multiplication of two numbers by Karatsuba or Montgomery algorithm
      */
+    friend BigNum multiply (const BigNum& lhs, const BigNum& rhs, const BigNum& mod);
+
+    /**
+    * @brief Division of two numbers
+    * @return Pair of numbers, the first is an integer, the second is a remainder of division
+    */
     friend std::pair<BigNum, BigNum> extract(const BigNum& first, const BigNum& second);
+
+    /**
+     *  @brief Euclid method requires number and module to be coprime,
+     *         Fermat method - to be mod prime
+     */
+    enum class InversionPolicy {
+        Euclid,
+        Fermat
+    };
+
+    /**
+     *  @return Inverted number to num in group modulo mod
+     */
+    friend BigNum inverted(const BigNum &num, const BigNum& mod, InversionPolicy policy);
+
 
      /**
       * @brief Converts number to vector of its digits
@@ -88,7 +112,10 @@ template<typename OStream>
 OStream& operator<<(OStream& os, const BigNum& num)
 {
     for (auto it = num._digits.rbegin(); it != num._digits.rend(); ++it) {
-        os << *it;
+        std::string s(std::to_string(*it));
+        while (s.size() != 9 && it != num._digits.rbegin())
+            s.insert(0, "0");
+        os << s;
     }
     return os;
 }
@@ -102,3 +129,5 @@ IStream& operator>>(IStream& is, BigNum& num)
     return is;
 }
 } // namespace lab
+
+lab::BigNum operator"" _bn(const char* str);
