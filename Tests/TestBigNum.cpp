@@ -266,6 +266,10 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             const auto mod = 101_bn;
             REQUIRE(calculateMontgomeryCoefficient(mod) == 1000_bn);
         }
+        {
+            const auto mod = 123421453_bn;
+            REQUIRE(calculateMontgomeryCoefficient(mod) == 1000000000_bn);
+        }
     }
 
     SECTION("Convert to Montgomery form") {
@@ -330,22 +334,28 @@ TEST_CASE("Big numbers test", "[BigNum]") {
 
     SECTION("Pow in Montgomery form") {
         {
-            const auto left = 99999993333399992_bn;
-            const auto right = 333334554342_bn;
+            const auto base = 99999993333399992_bn;
+            const auto degree = 333334554342_bn;
             const auto mod = 17_bn;
-            REQUIRE(powMontgomery(left, right, mod) == 1_bn);
+            REQUIRE(powMontgomery(base, degree, mod) == 1_bn);
         }
         {
-            const auto left = 2_bn;
-            const auto right = 5_bn;
+            const auto base = 2_bn;
+            const auto degree = 5_bn;
             const auto mod = 17_bn;
-            REQUIRE(powMontgomery(left, right, mod) == 15_bn);
+            REQUIRE(powMontgomery(base, degree, mod) == 15_bn);
         }
         {
-            const auto left = 212348120937498217430829437908234714897_bn;
-            const auto right = 2123498712394087294_bn;
+            const auto base = 999999933333_bn;
+            const auto degree = 3333_bn;
+            const auto mod = 17_bn;
+            REQUIRE(powMontgomery(base, degree, mod) == 5_bn);
+        }
+        {
+            const auto base = 100_bn;
+            const auto degree = 100_bn;
             const auto mod = 101_bn;
-            REQUIRE(powMontgomery(left, right, mod) == 31_bn);
+            REQUIRE(powMontgomery(base, degree, mod) == 1_bn);
         }
     }
 

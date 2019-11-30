@@ -128,7 +128,7 @@ public:
      * @param montgomery_coefficient = coprime and > mod
      * @param mod should be prime, but not obliged to
      */
-    friend BigNum powMontgomery(const BigNum &left, BigNum right, const BigNum &mod);
+    friend BigNum powMontgomery(const BigNum &base, BigNum degree, const BigNum &mod);
 
     /**
      * @brief length of BigNum
