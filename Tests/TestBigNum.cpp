@@ -264,7 +264,7 @@ TEST_CASE("Big numbers test", "[BigNum]") {
         }
         {
             const auto mod = 101_bn;
-            REQUIRE(calculateMontgomeryCoefficient(mod) == 10000000000_bn);
+            REQUIRE(calculateMontgomeryCoefficient(mod) == 1000_bn);
         }
     }
 
@@ -325,6 +325,38 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             const auto montgomery_coefficient = 100_bn;
             const auto coefficient = 47_bn;
             REQUIRE(multiplyMontgomery(left, right, mod, montgomery_coefficient, coefficient) == 11_bn);
+        }
+    }
+
+    SECTION("Pow in Montgomery form") {
+        {
+            const auto left = 99999993333399992_bn;
+            const auto right = 333334554342_bn;
+            const auto mod = 17_bn;
+            REQUIRE(powMontgomery(left, right, mod) == 1_bn);
+        }
+        {
+            const auto left = 2_bn;
+            const auto right = 5_bn;
+            const auto mod = 17_bn;
+            REQUIRE(powMontgomery(left, right, mod) == 15_bn);
+        }
+        {
+            const auto left = 212348120937498217430829437908234714897_bn;
+            const auto right = 2123498712394087294_bn;
+            const auto mod = 101_bn;
+            REQUIRE(powMontgomery(left, right, mod) == 31_bn);
+        }
+    }
+
+    SECTION("Length of BigNum") {
+        {
+            const auto num = 101_bn;
+            REQUIRE(length(num) == 3);
+        }
+        {
+            const auto num = 101933321254431244150903214_bn;
+            REQUIRE(length(num) == 27);
         }
     }
 }

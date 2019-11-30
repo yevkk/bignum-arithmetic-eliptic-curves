@@ -130,6 +130,11 @@ public:
      */
     friend BigNum powMontgomery(const BigNum &left, BigNum right, const BigNum &mod);
 
+    /**
+     * @brief length of BigNum
+     */
+    friend int length(const BigNum &num);
+
 private:
     ///< Array of coefficients in representation
     std::vector<int> _digits;

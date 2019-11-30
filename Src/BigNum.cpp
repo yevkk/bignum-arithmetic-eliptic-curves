@@ -566,13 +566,29 @@ BigNum inverted(const BigNum &num, const BigNum& mod,
     }
 }
 
+int countDigit(long long n)
+{
+    int count = 0;
+    while (n != 0) {
+        n = n / 10;
+        ++count;
+    }
+    return count;
+}
+
+int length(const BigNum &num) {
+    int num_size = (num._digits.size() - 1) * SECTION_DIGITS;
+    num_size += countDigit(num._digits[0]);
+    return num_size;
+}
+
 BigNum calculateMontgomeryCoefficient(const BigNum &mod) {
     if(!isPrime(mod)) {
         return mod + 1_bn;
     } else {
         std::string pow_10_str = "1";
-        int mod_size = mod._digits.size() * SECTION_DIGITS;
-        for(int i = 0; i < mod_size + 1; i++) {
+        int mod_size = length(mod);
+        for(int i = 0; i < mod_size; i++) {
             pow_10_str += "0";
         }
         return BigNum(pow_10_str);
@@ -607,16 +623,16 @@ BigNum powMontgomery(const BigNum &left, BigNum right, const BigNum &mod) {
     BigNum coefficient = extract(montgomery_coefficient * mc_inverted - 1_bn, mod).first;
     std::pair<BigNum, BigNum> extraction;
     BigNum base = convertToMontgomeryForm(left, mod, montgomery_coefficient);
-    BigNum result = 1_bn;
-    while(left > 0_bn) {
+    BigNum result = convertToMontgomeryForm(1_bn,mod,montgomery_coefficient);
+    while(right > 0_bn) {
         extraction = extract(right, 2_bn);
         if(extraction.second == 1_bn) {
-            multiplyMontgomery(result, base, mod, montgomery_coefficient, coefficient);
+            result = multiplyMontgomery(result, base, mod, montgomery_coefficient, coefficient);
         }
         right = extraction.first;
         base = multiplyMontgomery(base, base, mod, montgomery_coefficient, coefficient);
     }
-    result = multiply(mc_inverted, result, mod);
+    result = multiply(result, mc_inverted, mod);
     return result;
 }
 }
