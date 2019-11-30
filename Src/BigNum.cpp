@@ -591,8 +591,9 @@ BigNum convertToMontgomeryForm(const BigNum &num, const BigNum &mod, const BigNu
 BigNum multiplyMontgomery(const BigNum &left, const BigNum &right, const BigNum &mod, const BigNum &montgomery_coefficient, const BigNum &coefficient) {
     if(left >= mod || right >= mod)
         throw std::invalid_argument("Left and right in multiplyMontgomery must be < mod");
-    BigNum product = multiply(left, right, montgomery_coefficient);
+    BigNum product = left * right;
     BigNum temp = multiply(product, coefficient, montgomery_coefficient);
+    temp = product + temp * mod;
     temp = extract(temp, montgomery_coefficient).first;
     if(temp < mod)
         return temp;

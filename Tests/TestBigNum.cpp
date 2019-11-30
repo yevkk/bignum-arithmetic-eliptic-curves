@@ -316,4 +316,15 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             }
         }
     }
+
+    SECTION("Multiply in Montgomery form") {
+        {
+            const auto left = 3_bn;
+            const auto right = 4_bn;
+            const auto mod = 17_bn;
+            const auto montgomery_coefficient = 100_bn;
+            const auto coefficient = 47_bn;
+            REQUIRE(multiplyMontgomery(left, right, mod, montgomery_coefficient, coefficient) == 11_bn);
+        }
+    }
 }

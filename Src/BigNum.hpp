@@ -117,6 +117,13 @@ public:
     friend BigNum convertToMontgomeryForm(const BigNum &num, const BigNum &mod, const BigNum &montgomery_coefficient);
 
     /**
+     * @brief Multiply BigNums in Montogomery form in the range [0, mod)
+     * @param coefficient = (montgomery_coefficient(montgomery_coefficient^(−1) % mod)−1) / mod .
+     *        it is always the same, so pass it not to calculate it on each call of pow
+     */
+    friend BigNum multiplyMontgomery(const BigNum &left, const BigNum &right, const BigNum &mod, const BigNum &montgomery_coefficient, const BigNum &coefficient);
+
+    /**
      * @brief raises BigNum to the BigNum power using modular exponentiation and Montgomery form
      * @param montgomery_coefficient = coprime and > mod
      * @param mod should be prime, but not obliged to
