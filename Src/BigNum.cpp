@@ -53,6 +53,15 @@ std::string to_string(const BigNum &num)
     return result;
 }
 
+BigNum BigNum::infinity() {
+    static constexpr int digits_size = 100 / SECTION_DIGITS + 1;
+    BigNum inf;
+    inf._digits.reserve(digits_size);
+    for (int i = 0; i < digits_size; ++i)
+        inf._digits.push_back(NUM_BASE - 1);
+    return inf;
+}
+
 bool operator<(const BigNum &left, const BigNum &right) {
     if (left._digits.size() < right._digits.size()) return true;
     if (left._digits.size() > right._digits.size()) return false;
