@@ -3,17 +3,13 @@
 #include "BigNum.hpp"
 #include <vector>
 
+
 namespace lab {
-	namespace {
-		constexpr int CURVES_PER_FIELED = 3;
-
-		constexpr int NUM_FIELDS = 4;
-	}
-
 	struct Point {
 		BigNum x;
 		BigNum y;
 
+        Point(const BigNum& X,const BigNum& Y):x(X),y(Y){}
 		friend bool operator==(const Point& left, const Point& right) {
 			return (left.x == right.x) && (left.y == right.y);
 		}
@@ -37,6 +33,8 @@ namespace lab {
 		EllipticCurve() = default;
 
 		EllipticCurve& operator=(const EllipticCurve& that) = default;
+
+        static const Point neutral;
 
 		friend bool operator==(const EllipticCurve& left, const EllipticCurve& right);
 		friend bool operator!=(const EllipticCurve& left, const EllipticCurve& right);
@@ -69,14 +67,12 @@ namespace lab {
 		BigNum _b;
 	};
 
+    const Point EllipticCurve::neutral = { 100000000000_bn,10000000000_bn };
+
 	template<typename OStream>
 	OStream& operator<<(OStream& os, const EllipticCurve& curve) {
-		os << "y^2 = x^3 + " << curve._a << "x + " << curve._b;
+        os << "y^2 = x^3 + " << curve._a << "*x + " << curve._b << " mod " << curve._f->generator;
 		return os;
 	}
 
-	struct FieldMeta {
-		Field F;
-		EllipticCurve curves[CURVES_PER_FIELED];
-	};
 } // namespace lab
