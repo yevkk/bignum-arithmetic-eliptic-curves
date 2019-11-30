@@ -25,7 +25,7 @@ public:
     friend std::string to_string(const BigNum& num);
     friend BigNum from_string(std::string_view str);
 
-    static BigNum infinity();
+    static const BigNum& inf();
 
     friend bool operator<(const BigNum& left, const BigNum& right);
     friend bool operator<=(const BigNum& left, const BigNum& right);

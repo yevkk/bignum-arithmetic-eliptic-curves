@@ -53,13 +53,10 @@ std::string to_string(const BigNum &num)
     return result;
 }
 
-BigNum BigNum::infinity() {
-    static constexpr int digits_size = 100 / SECTION_DIGITS + 1;
-    BigNum inf;
-    inf._digits.reserve(digits_size);
-    for (int i = 0; i < digits_size; ++i)
-        inf._digits.push_back(NUM_BASE - 1);
-    return inf;
+
+const BigNum& BigNum::inf() {
+    static const BigNum _inf = 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999_bn;
+    return _inf;
 }
 
 bool operator<(const BigNum &left, const BigNum &right) {
