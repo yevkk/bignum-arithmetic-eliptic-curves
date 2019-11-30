@@ -53,6 +53,12 @@ std::string to_string(const BigNum &num)
     return result;
 }
 
+
+const BigNum& BigNum::inf() {
+    static const BigNum _inf = 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999_bn;
+    return _inf;
+}
+
 bool operator<(const BigNum &left, const BigNum &right) {
     if (left._digits.size() < right._digits.size()) return true;
     if (left._digits.size() > right._digits.size()) return false;
