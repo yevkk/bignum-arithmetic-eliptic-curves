@@ -256,4 +256,15 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             REQUIRE(inverted(a, mod, lab::BigNum::InversionPolicy::Fermat) == 12_bn);
         }
     }
+
+    SECTION("Calculate Montgomery coefficient") {
+        {
+            const auto mod = 23321723123_bn;
+            REQUIRE(_calculateMontgomeryCoefficient(mod) == 23321723124_bn);
+        }
+        {
+            const auto mod = 101_bn;
+            REQUIRE(_calculateMontgomeryCoefficient(mod) == 10000000000_bn);
+        }
+    }
 }

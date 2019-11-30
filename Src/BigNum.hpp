@@ -103,6 +103,26 @@ public:
      */
     friend BigNum toBigNum(std::vector<char>& num_digits);
 
+    /**
+     * @brief Convert BigNum to Montgomery form % mod
+     * @param montgomery_coefficient is bigger than mod and coprime with mod
+     * @return multiplication of num and montgomery_coefficient % mod (BigNum in Montogmery form)
+     */
+    friend BigNum convertToMontgomeryForm(const BigNum &num, const BigNum &mod, const BigNum &montgomery_coefficient);
+
+    /**
+     * @brief raises BigNum to the BigNum power using modular exponentiation and Montgomery form
+     * @param montgomery_coefficient = coprime and > mod
+     * @param mod should be prime, but not obliged to
+     */
+    friend BigNum powMontgomery(const BigNum &left, BigNum right, const BigNum &mod);
+
+    /**
+ * @brief calculate montgomery coef as 10^(mod.length+1) if mod is prime and mod + 1 if not
+ * @param montgomery_coefficient is bigger than mod and coprime with mod
+ */
+    friend BigNum _calculateMontgomeryCoefficient(const BigNum &mod);
+
 private:
     ///< Array of coefficients in representation
     std::vector<int> _digits;
