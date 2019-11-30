@@ -169,7 +169,7 @@ BigNum operator*(const BigNum &left, int right) {
     } else {
         result._digits.push_back(addition);
     }
-    while (result._digits.back() == 0)
+    while (!result._digits.empty() && result._digits.back() == 0)
         result._digits.pop_back();
     return result;
 }
@@ -532,7 +532,7 @@ BigNum operator* (const BigNum& lhs, const BigNum& rhs) {
                           IntVectorView(rhsTemp.begin(), rhsTemp.end()));
     finalize(nums);
 
-    while (nums.back() == 0) {
+    while (!nums.empty() && nums.back() == 0) {
         nums.pop_back();
     }
 
@@ -552,7 +552,7 @@ BigNum inverted(const BigNum &num, const BigNum& mod,
         if (gcd(num, mod) != 1_bn)
             throw std::invalid_argument("Nums must be coprime.");
         auto inverted_ = extendedEuclid(num, mod, mod).first;
-        while (inverted_._digits.back() == 0)
+        while (!inverted_._digits.empty() && inverted_._digits.back() == 0)
             inverted_._digits.pop_back();
         return inverted_;
     } else {
