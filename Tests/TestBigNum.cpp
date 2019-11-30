@@ -260,11 +260,60 @@ TEST_CASE("Big numbers test", "[BigNum]") {
     SECTION("Calculate Montgomery coefficient") {
         {
             const auto mod = 23321723123_bn;
-            REQUIRE(_calculateMontgomeryCoefficient(mod) == 23321723124_bn);
+            REQUIRE(calculateMontgomeryCoefficient(mod) == 23321723124_bn);
         }
         {
             const auto mod = 101_bn;
-            REQUIRE(_calculateMontgomeryCoefficient(mod) == 10000000000_bn);
+            REQUIRE(calculateMontgomeryCoefficient(mod) == 10000000000_bn);
+        }
+    }
+
+    SECTION("Convert to Montgomery form") {
+        SECTION("Common") {
+            {
+                const auto num = 3_bn;
+                const auto mod = 17_bn;
+                const auto montgomery_coefficient = 100_bn;
+                REQUIRE(convertToMontgomeryForm(num, mod, montgomery_coefficient) == 11_bn);
+            }
+            {
+                const auto num = 5_bn;
+                const auto mod = 17_bn;
+                const auto montgomery_coefficient = 100_bn;
+                REQUIRE(convertToMontgomeryForm(num, mod, montgomery_coefficient) == 7_bn);
+            }
+            {
+                const auto num = 7_bn;
+                const auto mod = 17_bn;
+                const auto montgomery_coefficient = 100_bn;
+                REQUIRE(convertToMontgomeryForm(num, mod, montgomery_coefficient) == 3_bn);
+            }
+            {
+                const auto num = 15_bn;
+                const auto mod = 17_bn;
+                const auto montgomery_coefficient = 100_bn;
+                REQUIRE(convertToMontgomeryForm(num, mod, montgomery_coefficient) == 4_bn);
+            }
+        }
+        SECTION("Pro") {
+            {
+                const auto num = 3_bn;
+                const auto mod = 101_bn;
+                const auto montgomery_coefficient = 10000000000_bn;
+                REQUIRE(convertToMontgomeryForm(num, mod, montgomery_coefficient) == 98_bn);
+            }
+            {
+                const auto num = 5_bn;
+                const auto mod = 211_bn;
+                const auto montgomery_coefficient = 10000000000_bn;
+                REQUIRE(convertToMontgomeryForm(num, mod, montgomery_coefficient) == 136_bn);
+            }
+            {
+                const auto num = 31415926535_bn;
+                const auto mod = 101_bn;
+                const auto montgomery_coefficient = 10000000000_bn;
+                REQUIRE(convertToMontgomeryForm(num, mod, montgomery_coefficient) == 43_bn);
+            }
         }
     }
 }

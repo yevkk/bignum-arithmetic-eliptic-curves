@@ -566,7 +566,7 @@ BigNum inverted(const BigNum &num, const BigNum& mod,
     }
 }
 
-BigNum _calculateMontgomeryCoefficient(const BigNum &mod) {
+BigNum calculateMontgomeryCoefficient(const BigNum &mod) {
     if(!isPrime(mod)) {
         return mod + 1_bn;
     } else {
@@ -600,24 +600,16 @@ BigNum multiplyMontgomery(const BigNum &left, const BigNum &right, const BigNum 
         return temp - mod;
 }
 
-/**
- * @brief raises BigNum to the BigNum power using modular exponentiation and Montgomery form
- * @param montgomery_coefficient = coprime and > mod
- * @param mod should be prime, but not obliged to
- */
 BigNum powMontgomery(const BigNum &left, BigNum right, const BigNum &mod) {
-    BigNum montgomery_coefficient = _calculateMontgomeryCoefficient(mod);
+    BigNum montgomery_coefficient = calculateMontgomeryCoefficient(mod);
     BigNum mc_inverted = inverted(montgomery_coefficient, mod);
     BigNum coefficient = extract(montgomery_coefficient * mc_inverted - 1_bn, mod).first;
-    BigNum zero = 0_bn;
-    BigNum one = 1_bn;
-    BigNum two = 2_bn;
     std::pair<BigNum, BigNum> extraction;
     BigNum base = convertToMontgomeryForm(left, mod, montgomery_coefficient);
     BigNum result = 1_bn;
-    while(left > zero) {
-        extraction = extract(right, two);
-        if(extraction.second == one) {
+    while(left > 0_bn) {
+        extraction = extract(right, 2_bn);
+        if(extraction.second == 1_bn) {
             multiplyMontgomery(result, base, mod, montgomery_coefficient, coefficient);
         }
         right = extraction.first;
