@@ -27,7 +27,7 @@ namespace lab {
 		if ((first.x == second.x && first.y != second.y)
 			|| (first == second && first.y == 0_bn))
 		{
-			return { 10000000000_bn,1000000000000_bn }; //neutral point (infinity)
+			return neutral;
 		} else {
 			BigNum tmp1;
 			BigNum tmp2;
@@ -36,10 +36,12 @@ namespace lab {
 				tmp1 = second.y >= first.y ? 
 					subtract(second.y, first.y, _f->generator) 
 					: lab::add(subtract(_f->generator, first.y, _f->generator), second.y, _f->generator); //y2-y1
-				
+               // std::cout << tmp1 << std::endl;
+
 				tmp2 = second.x >= first.x ? 
 					subtract(second.x, first.x, _f->generator) 
 					: lab::add(subtract(_f->generator, first.x, _f->generator), second.x, _f->generator); //x2-x1
+                //std::cout << tmp2 << std::endl;
 			}
 			else {
 				tmp1 = multiply(first.x, first.x, _f->generator); //x1^2
@@ -47,24 +49,32 @@ namespace lab {
 				tmp1 = lab::add(tmp1, _a, _f->generator);//3*x1^2 + A
 				tmp2 = multiply(2_bn, first.y, _f->generator);//2y1
 			}
-			m = multiply(tmp1,lab::inverted(tmp2,_f->generator, BigNum::InversionPolicy::Euclid),_f->generator); //tmp1 / tmp2
+			m = multiply(tmp1,lab::inverted(tmp2,_f->generator, BigNum::InversionPolicy::Fermat),_f->generator); //tmp1 / tmp2
+            //std::cout << m << std::endl;
 
-			tmp1 = multiply(m, m, _f->generator);
-			tmp2 = lab::add(first.x, second.x, _f->generator);
+			tmp1 = multiply(m, m, _f->generator);//= m^2
+            //std::cout << tmp1 << std::endl;
+
+			tmp2 = lab::add(first.x, second.x, _f->generator); //= x1+x2
+            //std::cout << tmp2 << std::endl;
 			
 			tmp1 = tmp1 >= tmp2 ?
 				subtract(tmp1, tmp2, _f->generator)
 				: lab::add(subtract(_f->generator, tmp2, _f->generator), tmp1, _f->generator); //= x3
+            //std::cout << tmp1 << std::endl;
 
 			tmp2 = first.x >= tmp1 ? 
 				subtract(first.x, tmp1, _f->generator) 
 				: lab::add(subtract(_f->generator, tmp1, _f->generator), first.x, _f->generator); //= x1-x3			
-			
+            //std::cout << tmp2 << std::endl;
+
 			tmp2 = multiply(m, tmp2, _f->generator); //= m*(x1-x3)
-			
+            //std::cout << tmp2 << std::endl;
+
             tmp2 = tmp2 >= first.y ?
                 subtract(tmp2, first.y, _f->generator)
                 : lab::add(subtract(_f->generator, first.y, _f->generator), tmp2, _f->generator); //= y3
+            //std::cout << tmp2 << std::endl;
 
 			return{ tmp1,tmp2 }; //{x3,y3} - answer
 		}

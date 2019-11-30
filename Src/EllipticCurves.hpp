@@ -34,7 +34,7 @@ namespace lab {
 
 		EllipticCurve& operator=(const EllipticCurve& that) = default;
 
-        static const Point neutral;
+        static inline const Point neutral = { BigNum::inf(), BigNum::inf() };
 
 		friend bool operator==(const EllipticCurve& left, const EllipticCurve& right);
 		friend bool operator!=(const EllipticCurve& left, const EllipticCurve& right);
@@ -66,8 +66,6 @@ namespace lab {
 		BigNum _a;
 		BigNum _b;
 	};
-
-    const Point EllipticCurve::neutral = { 100000000000_bn,10000000000_bn };
 
 	template<typename OStream>
 	OStream& operator<<(OStream& os, const EllipticCurve& curve) {
