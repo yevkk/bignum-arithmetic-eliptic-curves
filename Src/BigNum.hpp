@@ -65,19 +65,19 @@ public:
 
 
     /**
-     *  @brief Multiplication of two numbers by Karatsuba or Montgomery algorithm
+     * @brief Multiplication of two numbers by Karatsuba or Montgomery algorithm
      */
-    friend BigNum multiply (const BigNum& lhs, const BigNum& rhs, const BigNum& mod);
+    friend BigNum multiply(const BigNum& lhs, const BigNum& rhs, const BigNum& mod);
 
     /**
-    * @brief Division of two numbers
-    * @return Pair of numbers, the first is an integer, the second is a remainder of division
-    */
+     * @brief Division of two numbers
+     * @return Pair of numbers, the first is an integer, the second is a remainder of division
+     */
     friend std::pair<BigNum, BigNum> extract(const BigNum& first, const BigNum& second);
 
     /**
-     *  @brief Euclid method requires number and module to be coprime,
-     *         Fermat method - to be mod prime
+     * @brief Euclid method requires number and module to be coprime,
+     *        Fermat method - to be mod prime
      */
     enum class InversionPolicy {
         Euclid,
@@ -85,15 +85,14 @@ public:
     };
 
     /**
-     *  @return Inverted number to num in group modulo mod
+     * @brief Return inverted number to num in group modulo mod
      */
     friend BigNum inverted(const BigNum &num, const BigNum& mod, InversionPolicy policy);
 
-
-     /**
-      * @brief Converts number to vector of its digits
-      * @return Vector of digits
-      */
+    /**
+     * @brief Converts number to vector of its digits
+     * @return Vector of digits
+     */
     // FIXME(aoyako): remove this garbage
     friend std::vector<char> toOneDigit(const BigNum& num);
 
