@@ -1,5 +1,6 @@
 #include <BigNum.hpp>
 
+#include <cassert>
 #include <iterator>
 
 namespace lab {
@@ -16,7 +17,7 @@ constexpr int NUM_BASE = 1000000000;
  */
 constexpr char SECTION_DIGITS = 9;
 
-}
+} // <anonymous> namespace
 
 BigNum::BigNum(std::string_view num_str) {
     for (int i = num_str.size() - 1; i >= 0; i -= SECTION_DIGITS) {
@@ -59,49 +60,63 @@ const BigNum& BigNum::inf() {
     return _inf;
 }
 
-bool operator<(const BigNum &left, const BigNum &right) {
-    if (left._digits.size() < right._digits.size()) return true;
-    if (left._digits.size() > right._digits.size()) return false;
-    for (int curr_pos = left._digits.size() - 1; curr_pos >= 0; --curr_pos) {
-        if (left._digits[curr_pos] < right._digits[curr_pos]) return true;
-        if (left._digits[curr_pos] > right._digits[curr_pos]) return false;
+bool operator<(const BigNum& left, const BigNum& right) noexcept {
+    if (left._digits.size() < right._digits.size()) {
+        return true;
     }
+
+    if (left._digits.size() > right._digits.size()) {
+        return false;
+    }
+
+    for (int curr_pos = left._digits.size() - 1; curr_pos >= 0; --curr_pos) {
+        if (left._digits[curr_pos] < right._digits[curr_pos]) {
+            return true;
+        }
+
+        if (left._digits[curr_pos] > right._digits[curr_pos]) {
+            return false;
+        }
+    }
+
     return false;
 }
 
-bool operator>(const BigNum &left, const BigNum &right) {
+bool operator>(const BigNum& left, const BigNum& right)noexcept {
     return (right < left);
 }
 
-bool operator<=(const BigNum &left, const BigNum &right) {
+bool operator<=(const BigNum& left, const BigNum& right) noexcept {
     return !(right < left);
 }
 
-bool operator>=(const BigNum &left, const BigNum &right) {
+bool operator>=(const BigNum& left, const BigNum& right) noexcept {
     return !(left < right);
 }
 
-bool operator==(const BigNum &left, const BigNum &right) {
+bool operator==(const BigNum& left, const BigNum& right) noexcept {
     return ((!(right < left)) && (!(left < right)));
 }
 
-bool operator!=(const BigNum &left, const BigNum &right) {
+bool operator!=(const BigNum& left, const BigNum& right) noexcept {
     return !(left == right);
 }
 
 BigNum operator+(const BigNum &left, const BigNum &right) {
-    BigNum result;
     if (right._digits.size() > left._digits.size()) {
-        result = right;
+        auto result = right;
         int addition = 0;
         for (int curr_pos = 0; curr_pos < left._digits.size(); ++curr_pos) {
             result._digits[curr_pos] += left._digits[curr_pos] + addition;
             addition = result._digits[curr_pos] / NUM_BASE;
             result._digits[curr_pos] = result._digits[curr_pos] % NUM_BASE;
         }
+
+        return result;
     } else {
-        result = left;
+        auto result = left;
         int addition = 0;
+
         for (int curr_pos = 0; curr_pos < right._digits.size(); ++curr_pos) {
             long long temp = static_cast<long long>(result._digits[curr_pos])
                     + static_cast<long long>(right._digits[curr_pos]) + addition;
@@ -109,8 +124,9 @@ BigNum operator+(const BigNum &left, const BigNum &right) {
             addition = temp / NUM_BASE;
             result._digits[curr_pos] = result._digits[curr_pos] % NUM_BASE;
         }
+
+        return result;
     }
-    return result;
 }
 
 BigNum operator-(const BigNum &left, const BigNum &right) {
@@ -147,11 +163,6 @@ std::vector<char> toOneDigit(const BigNum &num) {
     return fnum;
 }
 
-BigNum from_string(std::string_view str)
-{
-    return BigNum(str);
-}
-
 BigNum toBigNum(std::vector<char> &num_digits) {
     std::string str_num;
     for (int i = num_digits.size() - 1; i >= 0; --i) {
@@ -182,7 +193,7 @@ BigNum operator*(const BigNum &left, int right) {
 
 bool isLowerDigits(const std::vector<char> &left, const std::vector<char> &right, int step);
 
-auto addDigits (const std::vector <char> &lhs, const std::vector <char> &rhs) {
+auto addDigits(const std::vector <char> &lhs, const std::vector <char> &rhs) {
 
     constexpr auto BASE = 10;
     std::vector <char> result;
@@ -341,58 +352,52 @@ BigNum operator%(const BigNum &left, const BigNum &right) {
 
 namespace {
     /*
-    *  @brief Class for read-only range of elements of some std::vector.
+    *  @brief Class for read-only contiguous range of elements.
     */
     template <typename T>
-    class ArrayView  {
+    class ArrayView
+    {
     public:
         template <typename Iter,
                   typename = std::enable_if <std::is_same_v<typename std::iterator_traits<Iter>::iterator_category,
                                                             std::random_access_iterator_tag>
                                           || std::is_same_v <Iter, T*>>>
-        explicit ArrayView(Iter begin,
-                           Iter end)
-                         : m_begin(&(*begin)),
-                           m_size(end - begin) {
+        explicit ArrayView(Iter begin, Iter end): 
+            _begin(std::addressof(*begin)),
+            _size(end - begin)
+        { }
+
+        const T* begin() const noexcept {
+            return _begin;
         }
 
-        const T* begin() const {
-            return m_begin;
+        const T* end() const noexcept {
+            return _begin + _size;
         }
 
-        const T* end() const {
-            return m_begin + m_size;
+        const auto size() const noexcept {
+            return _size;
         }
 
-        const auto size() const {
-            return m_size;
-        }
-
-        const auto& operator[](std::size_t n) const {
-            if (n >= m_size)
-                throw std::out_of_range("Out of view range.");
-            return *(m_begin + n);
+        const auto& operator[](const std::size_t n) const noexcept {
+            assert((n < _size) && "Out of view range.");
+            return *(_begin + n);
         }
 
     private:
-        const T* m_begin;
-        std::size_t m_size;
+        const T* _begin;
+        const std::size_t _size;
     };
-
-    template <typename Iter>
-    ArrayView (Iter begin, Iter end) -> ArrayView<typename std::iterator_traits<Iter>::value_type>;
-
-    using IntVectorView = ArrayView<int64_t>;
 
     /**
      *  @brief Returns nearest number bigger than n that is degree of two
     */
-    inline unsigned upperLog2(unsigned n) {
+    inline unsigned upperLog2(const unsigned n) {
         return std::pow(2, static_cast<int>(std::log2(n)) + 1);
     }
 
-    std::vector<int64_t> naiveMultiplication(const IntVectorView& lhs,
-                                              const IntVectorView& rhs) {
+    std::vector<int64_t> naiveMultiplication(const ArrayView<int64_t>& lhs,
+                                             const ArrayView<int64_t>& rhs) {
         std::vector<int64_t> result(lhs.size() + rhs.size());
 
         for (int i = 0; i < lhs.size(); ++i) {
@@ -415,18 +420,18 @@ namespace {
      *        like (A * 10 + B) * (C * 10 + D) = AC * 100 + BD + ((A + B) * (C + D) - AC - BD) * 10
      */
 
-    std::vector<int64_t> karatsuba(const IntVectorView& lhs, const IntVectorView& rhs) {
-
-        if (lhs.size() <= MIN_FOR_KARATSUBA)
+    std::vector<int64_t> karatsuba(const ArrayView<int64_t>& lhs, const ArrayView<int64_t>& rhs) {
+        if (lhs.size() <= MIN_FOR_KARATSUBA) {
             return naiveMultiplication(lhs, rhs);
+        }
 
         const auto length = lhs.size();
         std::vector<int64_t> result(length * 2);
 
-        ArrayView lhsL(lhs.begin() + length / 2, lhs.end());
-        ArrayView rhsL(rhs.begin() + length / 2, rhs.end());
-        ArrayView lhsR(lhs.begin(), lhs.begin() + length / 2);
-        ArrayView rhsR(rhs.begin(), rhs.begin() + length / 2);
+        ArrayView<int64_t> lhsL(lhs.begin() + length / 2, lhs.end());
+        ArrayView<int64_t> rhsL(rhs.begin() + length / 2, rhs.end());
+        ArrayView<int64_t> lhsR(lhs.begin(), lhs.begin() + length / 2);
+        ArrayView<int64_t> rhsR(rhs.begin(), rhs.begin() + length / 2);
 
         const auto c1 = karatsuba(lhsL, rhsL);
         const auto c2 = karatsuba(lhsR, rhsR);
@@ -439,8 +444,10 @@ namespace {
             rhsLR[i] = rhsL[i] + rhsR[i];
         }
 
-        auto c3 = karatsuba(IntVectorView(lhsLR.begin(), lhsLR.end()),
-                            IntVectorView(rhsLR.begin(), rhsLR.end()));
+        auto c3 = karatsuba(
+            ArrayView<int64_t>{lhsLR.begin(), lhsLR.end()},
+            ArrayView<int64_t>{rhsLR.begin(), rhsLR.end()}
+        );
 
         for (auto i = 0; i < length; ++i){
             c3[i] -= c2[i] + c1[i];
@@ -480,10 +487,10 @@ namespace {
     std::pair<BigNum, BigNum> extendedEuclid(const BigNum& a, const BigNum& b, const BigNum& mod) {
 
         if (b == BigNum("0")) {
-            return std::pair(BigNum("1"), BigNum("0"));
+            return std::pair(1_bn, 0_bn);
         }
-        const auto [int_part, remainder] = extract(a, b);
-        const auto [x, y] = extendedEuclid(b, remainder, mod);
+        const auto& [int_part, remainder] = extract(a, b);
+        const auto& [x, y] = extendedEuclid(b, remainder, mod);
         return std::pair(y, subtract(x, (int_part * y) % mod, mod));
     }
 
@@ -525,17 +532,19 @@ namespace {
     }
 }
 
-BigNum operator* (const BigNum& lhs, const BigNum& rhs) {
-
-    std::vector<int64_t> lhsTemp(lhs._digits.begin(), lhs._digits.end());
-    std::vector<int64_t> rhsTemp(rhs._digits.begin(), rhs._digits.end());
-    auto maxSize = std::max(lhsTemp.size(), rhsTemp.size());
+BigNum operator*(const BigNum& lhs, const BigNum& rhs) {
+    auto lhsTemp = lhs._digits;
+    auto rhsTemp = rhs._digits;
+    const int maxSize = std::max(lhsTemp.size(), rhsTemp.size());
 
     lhsTemp.resize(upperLog2(maxSize));
     rhsTemp.resize(upperLog2(maxSize));
 
-    auto nums = karatsuba(IntVectorView(lhsTemp.begin(), lhsTemp.end()),
-                          IntVectorView(rhsTemp.begin(), rhsTemp.end()));
+    auto nums = karatsuba(
+        ArrayView<int64_t>{lhsTemp.begin(), lhsTemp.end()},
+        ArrayView<int64_t>{rhsTemp.begin(), rhsTemp.end()}
+    );
+
     finalize(nums);
 
     while (!nums.empty() && nums.back() == 0) {
@@ -543,7 +552,7 @@ BigNum operator* (const BigNum& lhs, const BigNum& rhs) {
     }
 
     BigNum result;
-    result._digits = std::vector<int>(nums.begin(), nums.end());
+    result._digits.assign(nums.begin(), nums.end());
     return result;
 }
 
@@ -551,28 +560,31 @@ BigNum multiply(const BigNum& lhs, const BigNum& rhs, const BigNum& mod) {
         return (lhs % mod * rhs % mod) % mod;
 }
 
-BigNum inverted(const BigNum &num, const BigNum& mod,
-                                   BigNum::InversionPolicy policy = BigNum::InversionPolicy::Euclid){
-
+BigNum inverted(const BigNum& num, 
+                const BigNum& mod,
+                const BigNum::InversionPolicy policy = BigNum::InversionPolicy::Euclid) {
     if (policy == BigNum::InversionPolicy::Euclid) {
-        if (gcd(num, mod) != 1_bn)
+        if (gcd(num, mod) != 1_bn) {
             throw std::invalid_argument("Nums must be coprime.");
-        auto inverted_ = extendedEuclid(num, mod, mod).first;
-        while (!inverted_._digits.empty() && inverted_._digits.back() == 0)
-            inverted_._digits.pop_back();
-        return inverted_;
+        }
+
+        auto inverted = extendedEuclid(num, mod, mod).first;
+        while (!inverted._digits.empty() && inverted._digits.back() == 0) {
+            inverted._digits.pop_back();
+        }
+
+        return inverted;
     } else {
         if (!isPrime(mod)) {
             throw std::invalid_argument("Mod must be prime.");
         }
+
         if (gcd(num, mod) != 1_bn) {
             throw std::invalid_argument("Nums must be coprime.");
         }
+
         return pow (num, mod - 2_bn, mod);
     }
 }
-}
 
-lab::BigNum operator"" _bn(const char* str) {
-    return lab::BigNum(str);
-}
+} // namespace lab

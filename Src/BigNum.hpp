@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string_view>
 #include <vector>
 #include <iostream>
 #include <algorithm>
@@ -16,35 +17,30 @@ class BigNum
 public:
     BigNum(const BigNum& that) = default;
 
-    BigNum(std::string_view num_str);
+    explicit BigNum(std::string_view num_str);
 
     BigNum() = default;
 
     BigNum& operator=(const BigNum& that) = default;
 
     friend std::string to_string(const BigNum& num);
-    friend BigNum from_string(std::string_view str);
 
     static const BigNum& inf();
 
-    friend bool operator<(const BigNum& left, const BigNum& right);
-    friend bool operator<=(const BigNum& left, const BigNum& right);
-    friend bool operator>(const BigNum& left, const BigNum& right);
-    friend bool operator>=(const BigNum& left, const BigNum& right);
-    friend bool operator==(const BigNum& left, const BigNum& right);
-    friend bool operator!=(const BigNum& left, const BigNum& right);
+    friend bool operator<(const BigNum& left, const BigNum& right) noexcept;
+    friend bool operator<=(const BigNum& left, const BigNum& right) noexcept;
+    friend bool operator>(const BigNum& left, const BigNum& right) noexcept;
+    friend bool operator>=(const BigNum& left, const BigNum& right) noexcept;
+    friend bool operator==(const BigNum& left, const BigNum& right) noexcept;
+    friend bool operator!=(const BigNum& left, const BigNum& right) noexcept;
 
     /**
      * @note left number must be bigger than right number
      */
     friend BigNum operator-(const BigNum& left, const BigNum& right);
-
     friend BigNum operator+(const BigNum& left, const BigNum& right);
-
     friend BigNum operator*(const BigNum& left, int right);
-
     friend BigNum operator* (const BigNum &left, const BigNum &right);
-
     friend BigNum operator%(const BigNum& left, const BigNum& right);
 
     template<typename OStream>
@@ -98,38 +94,43 @@ public:
       * @brief Converts number to vector of its digits
       * @return Vector of digits
       */
+    // FIXME(aoyako): remove this garbage
     friend std::vector<char> toOneDigit(const BigNum& num);
 
     /**
      * @brief Converts vector of digits to number
      */
+    // FIXME(aoyako): remove this garbage
     friend BigNum toBigNum(std::vector<char>& num_digits);
 
 private:
-    ///< Array of coefficients in representation
-    std::vector<int> _digits;
+    /// Array of coefficients in representation
+    std::vector<int64_t> _digits;
 };
 
 template<typename OStream>
-OStream& operator<<(OStream& os, const BigNum& num)
-{
+OStream& operator<<(OStream& os, const BigNum& num) {
     for (auto it = num._digits.rbegin(); it != num._digits.rend(); ++it) {
         std::string s(std::to_string(*it));
-        while (s.size() != 9 && it != num._digits.rbegin())
+        while (s.size() != 9 && it != num._digits.rbegin()) {
             s.insert(0, "0");
+        }
         os << s;
     }
     return os;
 }
 
 template<typename IStream>
-IStream& operator>>(IStream& is, BigNum& num)
-{
+IStream& operator>>(IStream& is, BigNum& num) {
     std::string num_str;
     is >> num_str;
     num = BigNum(num_str);
     return is;
 }
-} // namespace lab
 
-lab::BigNum operator"" _bn(const char* str);
+
+inline lab::BigNum operator""_bn(const char* str) {
+    return lab::BigNum(str);
+}
+
+} // namespace lab

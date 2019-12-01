@@ -5,8 +5,10 @@
 #include "catch.hpp"
 
 TEST_CASE("Big numbers test", "[BigNum]") {
+    using namespace lab;
+
     SECTION( "Streaming a BigNum" ) {
-        lab::BigNum num;
+        BigNum num;
 
         SECTION("normal") {
             const std::string in = "1234567890";
@@ -30,7 +32,7 @@ TEST_CASE("Big numbers test", "[BigNum]") {
     SECTION( "BigNum from/to string" ) {
         SECTION( "normal" ) {
             const std::string in = "12345678901234567890";
-            const lab::BigNum num(in);
+            const auto num = BigNum{in};
             std::stringstream out;
             out << num;
             REQUIRE(out.str() == in);
@@ -38,7 +40,7 @@ TEST_CASE("Big numbers test", "[BigNum]") {
         }
         SECTION( "leading zeros" ) {
             const std::string in = "12345678901234567890";
-            const lab::BigNum num("0000000000000" + in);
+            const BigNum num("0000000000000" + in);
             std::stringstream out;
             out << num;
             REQUIRE(out.str() == in);
@@ -47,127 +49,127 @@ TEST_CASE("Big numbers test", "[BigNum]") {
     }
 
     SECTION( "Add BigNum" ) {
-        const lab::BigNum mod("666666666666");
+        const BigNum mod("666666666666");
         SECTION( "normal" ) {
-            const lab::BigNum num1("1234567890");
-            const lab::BigNum num2("9876543210");
-            REQUIRE(add(num1, num2, mod) == lab::BigNum("11111111100"));
+            const BigNum num1("1234567890");
+            const BigNum num2("9876543210");
+            REQUIRE(add(num1, num2, mod) == BigNum("11111111100"));
         }
         SECTION( "with modification" ) {
-            const lab::BigNum num1("12345678907777456243534");
-            const lab::BigNum num2("12345600077741235700399");
-            REQUIRE(add(num1, num2, mod) == lab::BigNum("210049889585"));
+            const BigNum num1("12345678907777456243534");
+            const BigNum num2("12345600077741235700399");
+            REQUIRE(add(num1, num2, mod) == BigNum("210049889585"));
         }
     }
 
     SECTION( "Subtract BigNum" ) {
-        const lab::BigNum mod("666666666666");
+        const BigNum mod("666666666666");
         SECTION( "normal" ) {
-            const lab::BigNum num1("123456789000");
-            const lab::BigNum num2("67335999999");
-            REQUIRE(subtract(num1, num2, mod) == lab::BigNum("56120789001"));
+            const BigNum num1("123456789000");
+            const BigNum num2("67335999999");
+            REQUIRE(subtract(num1, num2, mod) == BigNum("56120789001"));
         }
         SECTION( "with modification" ) {
-            const lab::BigNum num1("12345678907777456243534");
-            const lab::BigNum num2("1234560007774123570039999");
-            REQUIRE(subtract(num1, num2, mod) == lab::BigNum("431671874667"));
+            const BigNum num1("12345678907777456243534");
+            const BigNum num2("1234560007774123570039999");
+            REQUIRE(subtract(num1, num2, mod) == BigNum("431671874667"));
         }
     }
 
     SECTION( "BigNum <" ) {
         SECTION( "less" ) {
-            const lab::BigNum a("1234567890");
-            const lab::BigNum b("1234667890");
+            const BigNum a("1234567890");
+            const BigNum b("1234667890");
             REQUIRE(a < b);
         }
         SECTION( "equal" ) {
-            const lab::BigNum a("1234567890");
-            const lab::BigNum b("1234567890");
+            const BigNum a("1234567890");
+            const BigNum b("1234567890");
             REQUIRE(!(a < b));
         }
         SECTION( "bigger" ) {
-            const lab::BigNum a("2234568890");
-            const lab::BigNum b("2234567890");
+            const BigNum a("2234568890");
+            const BigNum b("2234567890");
             REQUIRE(!(a < b));
         }
     }
 
     SECTION( "BigNum >" ) {
         SECTION( "less" ) {
-            const lab::BigNum a("1234567890");
-            const lab::BigNum b("1234667890");
+            const BigNum a("1234567890");
+            const BigNum b("1234667890");
             REQUIRE(b > a);
         }
         SECTION( "equal" ) {
-            const lab::BigNum a("1234567890");
-            const lab::BigNum b("1234567890");
+            const BigNum a("1234567890");
+            const BigNum b("1234567890");
             REQUIRE(!( b > a));
         }
         SECTION( "bigger" ) {
-            const lab::BigNum a("2234568890");
-            const lab::BigNum b("2234567890");
+            const BigNum a("2234568890");
+            const BigNum b("2234567890");
             REQUIRE(!(b > a));
         }
     }
 
     SECTION( "BigNum <=" ) {
         SECTION( "less" ) {
-            const lab::BigNum a("1234567890");
-            const lab::BigNum b("1234667890");
+            const BigNum a("1234567890");
+            const BigNum b("1234667890");
             REQUIRE(a <= b);
         }
         SECTION( "equal" ) {
-            const lab::BigNum a("1234567890");
-            const lab::BigNum b("1234567890");
+            const BigNum a("1234567890");
+            const BigNum b("1234567890");
             REQUIRE(a <= b);
         }
         SECTION( "bigger" ) {
-            const lab::BigNum a("2234568890");
-            const lab::BigNum b("2234567890");
+            const BigNum a("2234568890");
+            const BigNum b("2234567890");
             REQUIRE(!(a <= b));
         }
     }
 
     SECTION( "BigNum >=" ) {
         SECTION( "less" ) {
-            const lab::BigNum a("1234567890");
-            const lab::BigNum b("1234667890");
+            const BigNum a("1234567890");
+            const BigNum b("1234667890");
             REQUIRE(b >= a);
         }
         SECTION( "equal" ) {
-            const lab::BigNum a("1234567890");
-            const lab::BigNum b("1234567890");
+            const BigNum a("1234567890");
+            const BigNum b("1234567890");
             REQUIRE( b >= a);
         }
         SECTION( "bigger" ) {
-            const lab::BigNum a("2234568890");
-            const lab::BigNum b("2234567890");
+            const BigNum a("2234568890");
+            const BigNum b("2234567890");
             REQUIRE(!(b >= a));
         }
     }
 
     SECTION( "BigNum ==" ) {
         SECTION( "less" ) {
-            const lab::BigNum a("1234567890");
-            const lab::BigNum b("1234667890");
+            const BigNum a("1234567890");
+            const BigNum b("1234667890");
             REQUIRE(!(a == b));
         }
         SECTION( "equal" ) {
-            const lab::BigNum a("1234567890");
-            const lab::BigNum b("1234567890");
+            const BigNum a("1234567890");
+            const BigNum b("1234567890");
             REQUIRE(a == b);
         }
         SECTION( "bigger" ) {
-            const lab::BigNum a("2234568890");
-            const lab::BigNum b("2234567890");
+            const BigNum a("2234568890");
+            const BigNum b("2234567890");
             REQUIRE(!(a == b));
         }
     }
 
     SECTION( "Copy" ) {
         SECTION( "test" ) {
-            const lab::BigNum a("1234567890");
-            lab::BigNum b;
+            const BigNum a("1234567890");
+            BigNum b;
             b = a;
             REQUIRE(a == b);
         }
@@ -175,48 +177,48 @@ TEST_CASE("Big numbers test", "[BigNum]") {
 
     SECTION( "Multiply" ) {
         SECTION( "test" ) {
-            const lab::BigNum a("7752362423526235624");
-            REQUIRE(a * 791 == lab::BigNum("6132118677009252378584"));
+            const BigNum a("7752362423526235624");
+            REQUIRE(a * 791 == BigNum("6132118677009252378584"));
         }
     }
 
     SECTION( "Extract BigNum" ) {
-        const lab::BigNum num1("123456");
+        const BigNum num1("123456");
 
         SECTION( "easy" ) {
-            const lab::BigNum num2("123");
-            REQUIRE(extract(num1, num2).first == lab::BigNum("1003"));
-            REQUIRE(extract(num1, num2).second == lab::BigNum("87"));
+            const BigNum num2("123");
+            REQUIRE(extract(num1, num2).first == BigNum("1003"));
+            REQUIRE(extract(num1, num2).second == BigNum("87"));
         }
         SECTION( "normal" ) {
-            const lab::BigNum num2("322");
-            REQUIRE(extract(num1, num2).first == lab::BigNum("383"));
-            REQUIRE(extract(num1, num2).second == lab::BigNum("130"));
+            const BigNum num2("322");
+            REQUIRE(extract(num1, num2).first == BigNum("383"));
+            REQUIRE(extract(num1, num2).second == BigNum("130"));
         }
         SECTION( "difficult" ) {
-            const lab::BigNum num1("1234567890");
-            const lab::BigNum num2("890890");
-            REQUIRE(extract(num1, num2).first == lab::BigNum("1385"));
-            REQUIRE(extract(num1, num2).second == lab::BigNum("685240"));
+            const BigNum num1("1234567890");
+            const BigNum num2("890890");
+            REQUIRE(extract(num1, num2).first == BigNum("1385"));
+            REQUIRE(extract(num1, num2).second == BigNum("685240"));
         }
         SECTION( "master" ) {
-            const lab::BigNum num1("123456789012341");
-            const lab::BigNum num2("89089012312345");
-            REQUIRE(extract(num1, num2).first == lab::BigNum("1"));
-            REQUIRE(extract(num1, num2).second == lab::BigNum("34367776699996"));
+            const BigNum num1("123456789012341");
+            const BigNum num2("89089012312345");
+            REQUIRE(extract(num1, num2).first == BigNum("1"));
+            REQUIRE(extract(num1, num2).second == BigNum("34367776699996"));
         }
         SECTION( "veteran" ) {
-            const lab::BigNum num1("31415926535897932384626433");
-            const lab::BigNum num2("832795028841971");
-            REQUIRE(extract(num1, num2).first == lab::BigNum("37723479905"));
-            REQUIRE(extract(num1, num2).second == lab::BigNum("393943945533678"));
+            const BigNum num1("31415926535897932384626433");
+            const BigNum num2("832795028841971");
+            REQUIRE(extract(num1, num2).first == BigNum("37723479905"));
+            REQUIRE(extract(num1, num2).second == BigNum("393943945533678"));
         }
         SECTION( "impossible" ) {
-            const lab::BigNum num1("499510597317328160963185950244594553469083026425223082533446850352619311881"
+            const BigNum num1("499510597317328160963185950244594553469083026425223082533446850352619311881"
                              "71010003137838752886587533208381420617177669147303");
-            const lab::BigNum num2("185778053217122680661300192787661119590921642");
-            REQUIRE(extract(num1, num2).first == lab::BigNum("268874922880981921356444837383660471746363637968708614244631874788091837363196835"));
-            REQUIRE(extract(num1, num2).second == lab::BigNum("1540141020615185186336802365801588561744233"));
+            const BigNum num2("185778053217122680661300192787661119590921642");
+            REQUIRE(extract(num1, num2).first == BigNum("268874922880981921356444837383660471746363637968708614244631874788091837363196835"));
+            REQUIRE(extract(num1, num2).second == BigNum("1540141020615185186336802365801588561744233"));
         }
     }
 
@@ -248,12 +250,12 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             const auto a = 1442141324241124_bn;
             const auto mod = 23321723123_bn;
 
-            REQUIRE(inverted(a, mod, lab::BigNum::InversionPolicy::Euclid) == 515791030_bn);
+            REQUIRE(inverted(a, mod, BigNum::InversionPolicy::Euclid) == 515791030_bn);
         }
         {
             const auto a = 1442141324241124_bn;
             const auto mod = 191_bn;
-            REQUIRE(inverted(a, mod, lab::BigNum::InversionPolicy::Fermat) == 12_bn);
+            REQUIRE(inverted(a, mod, BigNum::InversionPolicy::Fermat) == 12_bn);
         }
     }
 }
