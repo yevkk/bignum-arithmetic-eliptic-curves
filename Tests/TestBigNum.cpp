@@ -265,7 +265,7 @@ TEST_CASE("Big numbers test", "[BigNum]") {
     SECTION("Calculate Montgomery coefficient") {
         {
             const auto mod = 23321723123_bn;
-            REQUIRE(calculateMontgomeryCoefficient(mod) == 23321723124_bn);
+            REQUIRE(calculateMontgomeryCoefficient(mod) == 100000000000_bn);
         }
         {
             const auto mod = 101_bn;
@@ -335,9 +335,36 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             const auto coefficient = 47_bn;
             REQUIRE(multiplyMontgomery(left, right, mod, montgomery_coefficient, coefficient) == 11_bn);
         }
+        {
+            const auto left = 96_bn;
+            const auto right = 94_bn;
+            const auto mod = 101_bn;
+            const auto montgomery_coefficient = 1000_bn;
+            const auto mc_inverted = inverted(montgomery_coefficient, mod, lab::BigNum::InversionPolicy::Euclid);
+            const auto coefficient = extract(montgomery_coefficient * mc_inverted - 1_bn, mod).first;
+            REQUIRE(multiplyMontgomery(left, right, mod, montgomery_coefficient, coefficient) == 47_bn);
+        }
+        {
+            const auto left = 96_bn;
+            const auto right = 94_bn;
+            const auto mod = 101_bn;
+            const auto montgomery_coefficient = 1000_bn;
+            const auto mc_inverted = inverted(montgomery_coefficient, mod, lab::BigNum::InversionPolicy::Euclid);
+            const auto coefficient = extract(montgomery_coefficient * mc_inverted - 1_bn, mod).first;
+            REQUIRE(multiplyMontgomery(left, right, mod, montgomery_coefficient, coefficient) == 47_bn);
+        }
+        {
+            const auto left = 96_bn;
+            const auto right = 94_bn;
+            const auto mod = 101_bn;
+            const auto montgomery_coefficient = 1000_bn;
+            const auto mc_inverted = inverted(montgomery_coefficient, mod, lab::BigNum::InversionPolicy::Euclid);
+            const auto coefficient = extract(montgomery_coefficient * mc_inverted - 1_bn, mod).first;
+            REQUIRE(multiplyMontgomery(left, right, mod, montgomery_coefficient, coefficient) == 47_bn);
+        }
     }
 
-    SECTION("Pow in Montgomery form") {
+    SECTION("Pow, using Montgomery form") {
         {
             const auto base = 99999993333399992_bn;
             const auto degree = 333334554342_bn;
@@ -362,6 +389,24 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             const auto mod = 101_bn;
             REQUIRE(powMontgomery(base, degree, mod) == 1_bn);
         }
+        {
+            const auto base = 1234512345_bn;
+            const auto degree = 123123_bn;
+            const auto mod = 6243379_bn;
+            REQUIRE(powMontgomery(base, degree, mod) == 1363736_bn);
+        }
+        {
+            const auto base = 1234512345_bn;
+            const auto degree = 123123_bn;
+            const auto mod = 624334409_bn;
+            REQUIRE(powMontgomery(base, degree, mod) == 166746373_bn);
+        }
+        {
+            const auto base = 12345123455485945_bn;
+            const auto degree = 12312312341234_bn;
+            const auto mod = 624334409_bn;
+            REQUIRE(powMontgomery(base, degree, mod) == 404851936_bn);
+        }
     }
 
     SECTION("Length of BigNum") {
@@ -372,6 +417,10 @@ TEST_CASE("Big numbers test", "[BigNum]") {
         {
             const auto num = 101933321254431244150903214_bn;
             REQUIRE(length(num) == 27);
+        }
+        {
+            const auto num = 1019333212544312441509032_bn;
+            REQUIRE(length(num) == 25);
         }
     }
 }

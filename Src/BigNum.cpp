@@ -622,34 +622,30 @@ int countDigit(long long n)
 
 int length(const BigNum &num) {
     int num_size = (num._digits.size() - 1) * SECTION_DIGITS;
-    num_size += countDigit(num._digits[0]);
+    num_size += countDigit(num._digits[num._digits.size() - 1]);
     return num_size;
 }
 
 BigNum calculateMontgomeryCoefficient(const BigNum &mod) {
-    if(!isPrime(mod)) {
-        return mod + 1_bn;
-    } else {
-        if (mod == 5_bn)
-            return 100_bn;
-        std::string pow_10_str = "1";
-        int mod_size = length(mod);
-        for(int i = 0; i < mod_size; i++) {
-            pow_10_str += "0";
-        }
-        return BigNum(pow_10_str);
+    if (mod == 5_bn)
+        return 100_bn;
+    std::string pow_10_str = "1";
+    int mod_size = length(mod);
+    for(int i = 0; i < mod_size; i++) {
+        pow_10_str += "0";
     }
+    return BigNum(pow_10_str);
 }
-    
+
 BigNum convertToMontgomeryForm(const BigNum &num, const BigNum &mod, const BigNum &montgomery_coefficient) {
     return  multiply(num, montgomery_coefficient, mod);
 }
 
 /**
- * @brief Multiply BigNums in Montogomery form in the range [0, mod)
- * @param coefficient = (montgomery_coefficient(montgomery_coefficient^(−1) % mod)−1) / mod .
- *        it is always the same, so pass it not to calculate it on each call of pow
- */
+* @brief Multiply BigNums in Montogomery form in the range [0, mod)
+* @param coefficient = (montgomery_coefficient(montgomery_coefficient^(−1) % mod)−1) / mod .
+*        it is always the same, so pass it not to calculate it on each call of pow
+*/
 BigNum multiplyMontgomery(const BigNum &left, const BigNum &right, const BigNum &mod, const BigNum &montgomery_coefficient, const BigNum &coefficient) {
     if(left >= mod || right >= mod)
         throw std::invalid_argument("Left and right in multiplyMontgomery must be < mod");
@@ -665,7 +661,7 @@ BigNum multiplyMontgomery(const BigNum &left, const BigNum &right, const BigNum 
 
 BigNum powMontgomery(const BigNum &base, BigNum degree, const BigNum &mod) {
     BigNum montgomery_coefficient = calculateMontgomeryCoefficient(mod);
-    BigNum mc_inverted = inverted(montgomery_coefficient, mod);
+    BigNum mc_inverted = inverted(montgomery_coefficient, mod, BigNum::InversionPolicy::Euclid);
     BigNum coefficient = extract(montgomery_coefficient * mc_inverted - 1_bn, mod).first;
     std::pair<BigNum, BigNum> extraction;
     BigNum base_mf = convertToMontgomeryForm(base, mod, montgomery_coefficient);
