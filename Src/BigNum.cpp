@@ -587,4 +587,67 @@ BigNum inverted(const BigNum& num,
     }
 }
 
+BigNum operator/(const BigNum& left, const int right)
+{
+    // TODO: implement
+    return {};
+}
+
+std::optional<std::pair<BigNum, BigNum>> sqrt(const BigNum& n, const BigNum& p)
+{
+    // NOTE: Names of variables are taken directly from Wikipedia for better understanding
+
+    /// If it doesn't satisfy Fermat's little theorem than we can't find result
+    /// TODO: replace this pow with Montgomery's one
+    if (pow(n, 2_bn, p) != 1_bn) {
+        return {};
+    }
+
+    /// Attempt to find trivial solution
+    const auto& [q, s] = [&] {
+        auto q = p - 1_bn;
+        int s = 0;
+        while (q % 2_bn == 0_bn) {
+            q = q / 2;
+            ++s;
+        }
+
+        return std::pair{q, s};
+    }();
+
+    /// If p = 3 (mod 4) than solutions are trivial
+    if (s == 1) {
+        const auto x = pow(n, (p + 1_bn) / 4, p);
+        return std::pair{x, p - x};
+    }
+
+    /// Select a quadric non-residue (mod p)
+    const auto z = [&] {
+        for (auto i = 1_bn; i < p; i = i + 1_bn) {
+            if (pow(i, 2_bn, p) != 1_bn) {
+                return i;
+            }
+        }
+
+        return 0_bn;
+    }();
+
+    auto c = pow(z, q, p);
+    auto r = pow(n, (q + 1_bn) / 2, p);
+    auto t = pow(n, q, p);
+    auto m = s;
+
+    while (t != 1_bn) {
+        
+        const auto b = pow(c, (1_bn), p);
+
+        r = r * b % p;
+        c = b * b % p;
+        t = t * c % p;
+        
+    }
+    
+    return std::pair{r, p - r};
+}
+
 } // namespace lab

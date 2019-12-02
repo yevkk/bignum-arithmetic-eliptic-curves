@@ -267,4 +267,8 @@ TEST_CASE("Big numbers test", "[BigNum]") {
         REQUIRE(inverted(1442141324241124_bn, 23321723123_bn, BigNum::InversionPolicy::Euclid) == 515791030_bn);
         REQUIRE(inverted(1442141324241124_bn, 191_bn, BigNum::InversionPolicy::Fermat) == 12_bn);
     }
+
+    SECTION( "Square root" ) {
+        REQUIRE_FALSE(sqrt(2_bn, 4_bn).has_value());
+    }
 }

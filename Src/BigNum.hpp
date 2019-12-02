@@ -1,9 +1,11 @@
 #pragma once
 
 #include <string_view>
-#include <vector>
-#include <iostream>
 #include <algorithm>
+#include <optional>
+#include <iostream>
+#include <utility>
+#include <vector>
 #include <string>
 #include <cmath>
 
@@ -39,8 +41,9 @@ public:
      */
     friend BigNum operator-(const BigNum& left, const BigNum& right);
     friend BigNum operator+(const BigNum& left, const BigNum& right);
+    friend BigNum operator/(const BigNum& left, int right);
     friend BigNum operator*(const BigNum& left, int right);
-    friend BigNum operator* (const BigNum &left, const BigNum &right);
+    friend BigNum operator*(const BigNum& left, const BigNum& right);
     friend BigNum operator%(const BigNum& left, const BigNum& right);
 
     template<typename OStream>
@@ -87,7 +90,12 @@ public:
     /**
      * @brief Return inverted number to num in group modulo mod
      */
-    friend BigNum inverted(const BigNum &num, const BigNum& mod, InversionPolicy policy);
+    friend BigNum inverted(const BigNum& num, const BigNum& mod, InversionPolicy policy);
+
+    /**
+     * @brief Finds square root of @a num modulo @a mod using Tonelli–Shanks algorithm
+     */
+    friend std::optional<std::pair<BigNum, BigNum>> sqrt(const BigNum& num, const BigNum& mod);
 
     /**
      * @brief Converts number to vector of its digits
