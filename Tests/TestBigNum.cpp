@@ -212,11 +212,16 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             REQUIRE(extract(num1, num2).second == lab::BigNum("393943945533678"));
         }
         SECTION( "impossible" ) {
-            const lab::BigNum num1("499510597317328160963185950244594553469083026425223082533446850352619311881"
-                             "71010003137838752886587533208381420617177669147303");
+            const lab::BigNum num1("499510597317328160963185950244594553469083026425223082533446850352619311881");
             const lab::BigNum num2("185778053217122680661300192787661119590921642");
-            REQUIRE(extract(num1, num2).first == lab::BigNum("268874922880981921356444837383660471746363637968708614244631874788091837363196835"));
-            REQUIRE(extract(num1, num2).second == lab::BigNum("1540141020615185186336802365801588561744233"));
+            REQUIRE(extract(num1, num2).first == lab::BigNum("2688749228809819213564448373836"));
+            REQUIRE(extract(num1, num2).second == lab::BigNum("112343233140762794983045865400261977220353169"));
+        }
+        SECTION( "additional" ) {
+            const lab::BigNum num1("800012");
+            const lab::BigNum num2("2");
+            REQUIRE(extract(num1, num2).first == lab::BigNum("400006"));
+            REQUIRE(extract(num1, num2).second == lab::BigNum("0"));
         }
     }
 

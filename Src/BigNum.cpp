@@ -53,6 +53,12 @@ std::string to_string(const BigNum &num)
     return result;
 }
 
+
+const BigNum& BigNum::inf() {
+    static const BigNum _inf = 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999_bn;
+    return _inf;
+}
+
 bool operator<(const BigNum &left, const BigNum &right) {
     if (left._digits.size() < right._digits.size()) return true;
     if (left._digits.size() > right._digits.size()) return false;
@@ -169,9 +175,24 @@ BigNum operator*(const BigNum &left, int right) {
     } else {
         result._digits.push_back(addition);
     }
-    while (result._digits.back() == 0)
+    while (!result._digits.empty() && result._digits.back() == 0)
         result._digits.pop_back();
     return result;
+}
+
+/**
+ * @brief Compares vector of digits with operator <
+ * @param step points to the number of digits from beginning of left var to compare
+ */
+bool isLowerDigits(const std::vector<char> &left, const std::vector<char> &right, int step) {
+    if ((step > right.size()) && (step <= left.size())) return false;
+    if ((step < right.size()) || (left.size() < right.size())) return true;
+    if (step > left.size()) return true;
+    for (int i = right.size() - 1; i >= 0; --i) {
+        if (left[left.size() + i - step] < right[i]) return true;
+        if (left[left.size() + i - step] > right[i]) return false;
+    }
+    return false;
 }
 
 bool isLowerDigits(const std::vector<char> &left, const std::vector<char> &right, int step);
@@ -203,29 +224,6 @@ auto addDigits (const std::vector <char> &lhs, const std::vector <char> &rhs) {
 }
 
 /**
- * @brief Compares vector of digits with operator <
- * @param step points to the number of digits from beginning of left var to compare
- */
-bool isLowerDigits(const std::vector<char> &left, const std::vector<char> &right, int step) {
-    if ((step > right.size()) && (step <= left.size())) return false;
-    if ((step < right.size()) || (left.size() < right.size())) return true;
-    if (step > left.size()) return true;
-    for (int i = right.size() - 1; i >= 0; --i) {
-        if (left[left.size() + i - step] < right[i]) return true;
-        if (left[left.size() + i - step] > right[i]) return false;
-    }
-    return false;
-}
-
-/**
- * @brief Compares vector of digits with operator >=
- * @param step points to the number of digits from beginning of left var to compare
- */
-bool isBiggerDigits(std::vector<char> &num1, std::vector<char> &num2, int step) {
-    return !(isLowerDigits(num1, num2, step));
-}
-
-/**
  * @brief Multiplies vector of digits and int
  */
 std::vector<char> multiplyDigits(std::vector<char> &num1, int num2) {
@@ -243,19 +241,63 @@ std::vector<char> multiplyDigits(std::vector<char> &num1, int num2) {
 }
 
 /**
- * @brief Subtracts vectors of digits,
- *        where the second number will be aligned to beginning of the first
- * @param side points to number of digits from beginning of left var to delete
+ * @brief Returns power of basis to make two numbers almost equal
+ * @param fnum number to reach
+ * @param snum number to multiply
+ * @return Maximum power of basis to reach bottom border of fnum
  */
-void leftSubstract(std::vector<char> &num1, std::vector<char> &num2, int side) {
-    for (int i = 0; i < num2.size(); ++i) {
-        if (num1[num1.size() - side + i] < num2[i]) {
-            num1[num1.size() - side + i] = 10 + num1[num1.size() - side + i] - num2[i];
-            num1[num1.size() - side + i + 1] -= 1;
-        } else {
-            num1[num1.size() - side + i] = num1[num1.size() - side + i] - num2[i];
+int getMaxPow(std::vector<char> &fnum, std::vector<char> &snum)
+{
+    if (snum.size() > fnum.size()) {
+        return -1;
+    }
+    int current_pow = fnum.size() - snum.size();
+    for (int i = snum.size() - 1; i >= 0; --i) {
+        if (snum[i] > fnum[i + current_pow]) {
+            return current_pow - 1;
+        }
+        if (snum[i] < fnum[i + current_pow]) {
+            return current_pow;
         }
     }
+    return current_pow;
+}
+
+/// TODO fix +=10 after changing basis
+/**
+ * @brief Subtracts two numbers, where second one is multiplied on basis with given power.
+ *        Result stores in first parameter
+ * @param curr_pow power of basis
+ */
+void subtractPow(std::vector<char> &fnum, std::vector<char> &snum, int curr_pow)
+{
+    for (int i = 0; i < snum.size(); ++i) {
+        if (fnum[i + curr_pow] < snum[i]) {
+            fnum[i + curr_pow] += 10;
+            fnum[i + curr_pow + 1] -= 1;
+        }
+        fnum[i + curr_pow] -= snum[i];
+    }
+}
+
+/**
+ * @brief Compares with operator<= two numbers, where second one is multiplied on basis with given power
+ * @param curr_pow power of basis
+ */
+bool lessNumPow(std::vector<char> &fnum, std::vector<char> &snum, int curr_pow)
+{
+    if (curr_pow + snum.size() < fnum.size()) {
+        return true;
+    }
+    for (int i = snum.size() - 1; i >= 0; --i) {
+        if (fnum[i + curr_pow] < snum[i]) {
+            return false;
+        }
+        if (fnum[i + curr_pow] > snum[i]) {
+            return true;
+        }
+    }
+    return true;
 }
 
 std::pair<BigNum, BigNum> extract(const BigNum &left, const BigNum &right) {
@@ -263,42 +305,44 @@ std::pair<BigNum, BigNum> extract(const BigNum &left, const BigNum &right) {
         return std::pair<BigNum, BigNum>(BigNum("0"), left);
     std::vector<char> fnum = toOneDigit(left);
     std::vector<char> snum = toOneDigit(right);
-    std::vector<char> result;
     std::vector<char> current = snum;
-    std::vector<char> temp;
-    int side = 1;
-    int power = 1;
-
-    side = current.size();
-    while ((isLowerDigits(fnum, current, side))) {
-        side++;
-    }
+    std::vector<char> result;
+    int curr_pow = getMaxPow(fnum, snum);
+    int hight_rank = 1;
     while (true) {
-        if ((power == 1) && (isLowerDigits(fnum, current, side))) {
-            side++;
-            if (side > fnum.size()) {
-                break;
-            }
+        while (lessNumPow(fnum, current, curr_pow)) {
+            ++hight_rank;
+            current = multiplyDigits(snum, hight_rank);
+        }
+        current = multiplyDigits(snum, hight_rank - 1);
+        subtractPow(fnum, current, curr_pow);
+        result.push_back(hight_rank-1);
+        int to_delete = current.size();
+        while (!fnum.empty() && (fnum.back() == 0) && (to_delete > 0)) {
+            fnum.pop_back();
+            --to_delete;
+        }
+        while (!fnum.empty() && (fnum.back() == 0)) {
+            fnum.pop_back();
+            --curr_pow;
             result.push_back(0);
         }
-        if (isBiggerDigits(fnum, current, side)) {
-            power++;
-            current = multiplyDigits(snum, power);
-        }
-        if ((power != 1) && (isLowerDigits(fnum, current, side))) {
-            current = multiplyDigits(snum, power - 1);
-            leftSubstract(fnum, current, side);
-            int prev_size = temp.size();
-            temp.clear();
-            while (!fnum.empty() && fnum.back() == 0) {
-                fnum.pop_back();
-                side--;
+        if ((fnum.size() <= curr_pow) && (curr_pow <= snum.size()) && !lessNumPow(fnum, snum, 0)) {
+            for (int i = 0; i < fnum.size(); i++) {
+                result.push_back(0);
             }
-            result.push_back(power - 1);
-            power = 1;
-            current = snum;
-            side++;
         }
+        int new_pow = getMaxPow(fnum, snum);
+        if (new_pow == -1) {
+            break;
+        }
+        while (curr_pow != new_pow + 1) {
+            --curr_pow;
+            result.push_back(0);
+        }
+        --curr_pow;
+        hight_rank = 1;
+        current = snum;
     }
     std::reverse(result.begin(), result.end());
     return std::pair<BigNum, BigNum>(toBigNum(result), toBigNum(fnum));
@@ -532,7 +576,7 @@ BigNum operator* (const BigNum& lhs, const BigNum& rhs) {
                           IntVectorView(rhsTemp.begin(), rhsTemp.end()));
     finalize(nums);
 
-    while (nums.back() == 0) {
+    while (!nums.empty() && nums.back() == 0) {
         nums.pop_back();
     }
 
@@ -552,7 +596,7 @@ BigNum inverted(const BigNum &num, const BigNum& mod,
         if (gcd(num, mod) != 1_bn)
             throw std::invalid_argument("Nums must be coprime.");
         auto inverted_ = extendedEuclid(num, mod, mod).first;
-        while (inverted_._digits.back() == 0)
+        while (!inverted_._digits.empty() && inverted_._digits.back() == 0)
             inverted_._digits.pop_back();
         return inverted_;
     } else {
