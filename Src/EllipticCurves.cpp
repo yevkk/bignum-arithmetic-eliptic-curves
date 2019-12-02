@@ -20,11 +20,11 @@ bool EllipticCurve::contains(const Point& p) const {
        return false;
  }
 
-Point EllipticCurve::inverted(const Point& p) {
+Point EllipticCurve::inverted(const Point& p) const {
     return { p.x,_f->generator - p.y };
 }
 
-Point EllipticCurve::add(const Point& first, const Point& second) {
+Point EllipticCurve::add(const Point& first, const Point& second) const {
     if (first == neutral || second == neutral)
         return first == neutral ? second : first;
     

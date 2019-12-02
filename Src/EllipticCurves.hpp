@@ -48,6 +48,7 @@ public:
     */
     bool contains(const Point& p) const;
 
+    //TODO: do when sqrt is ready
     /**
     * @brief Looks for points on curve with given x-coordinate
     * @return Vector of matching points
@@ -57,9 +58,9 @@ public:
     /**
     * @brief p must belong to curve
     */
-    Point inverted(const Point& p);
+    Point inverted(const Point& p) const;
 
-    Point add(const Point& first, const Point& second);
+    Point add(const Point& first, const Point& second) const;
 
    private:
     ///< y^2 = x^3 + a*x + b on field f

@@ -25,8 +25,9 @@ TEST_CASE("Elliptic curves test", "[curves]") {
         }
     }
 
+    //TODO: do when sqrt is ready
     SECTION("Find points by x-coordinate") {
-
+        
     }
 
     SECTION("Inverted point") {
@@ -41,8 +42,6 @@ TEST_CASE("Elliptic curves test", "[curves]") {
         }
     }
     
-    
-
     SECTION("Add 2 points") {
         SECTION("Easy") {
             lab::Point p1 = { 769_bn, 7_bn };
@@ -56,16 +55,9 @@ TEST_CASE("Elliptic curves test", "[curves]") {
             lab::Point expected = { 96091_bn, 21870_bn };
             REQUIRE(expected == curveDataBase[0].curves[2].add(p1, p2));
         }
+        //TODO
         SECTION("Challenging") {
-            //using std::cout, std::endl;
-            //lab::Point p = curveDataBase[1].curves[2].add({ 1653_bn,153340_bn }, { 3333_bn, 100_bn });
-            //cout << lab::inverted(1680_bn,80000005213_bn,lab::BigNum::InversionPolicy::Euclid) << endl;
-            //cout << curveDataBase[1].curves[2].contains(p) << endl;
 
-            //lab::Point p1 = { , };
-            //lab::Point p2 = { , };
-            //lab::Point expected = { , };
-            //REQUIRE(expected == curveDataBase[1].curves[2].add(p1, p2));
         }
         SECTION("Neutral point") {
             lab::Point p1 = {89_bn,320_bn};
@@ -73,6 +65,4 @@ TEST_CASE("Elliptic curves test", "[curves]") {
             REQUIRE(lab::EllipticCurve::neutral == curveDataBase[0].curves[0].add(p1, p2));
         }
     }
-
-    system("pause");
 }
