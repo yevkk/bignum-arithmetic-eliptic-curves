@@ -609,6 +609,73 @@ BigNum inverted(const BigNum &num, const BigNum& mod,
         return pow (num, mod - 2_bn, mod);
     }
 }
+
+int countDigit(long long n) {
+    int count = 0;
+    while (n != 0) {
+        n = n / 10;
+        ++count;
+    }
+    return count;
+}
+
+int length(const BigNum& num) {
+    int num_size = (num._digits.size() - 1) * SECTION_DIGITS;
+    num_size += countDigit(num._digits[num._digits.size() - 1]);
+    return num_size;
+}
+
+BigNum calculateMontgomeryCoefficient(const BigNum& mod) {
+    if (mod == 5_bn) {
+        return 100_bn;
+    }
+    std::string res(length(mod) + 1, '0');
+    res[0] = '1';
+    return BigNum(res);
+}
+
+BigNum convertToMontgomeryForm(const BigNum& num, const BigNum& mod, const BigNum& montgomery_coefficient) {
+    return  multiply(num, montgomery_coefficient, mod);
+}
+
+/**
+ * @brief Multiply BigNums in Montogomery form in the range [0, mod)
+ * @param coefficient = (montgomery_coefficient(montgomery_coefficient^(−1) % mod)−1) / mod .
+ *        it is always the same, so pass it not to calculate it on each call of pow
+ */
+BigNum multiplyMontgomery(const BigNum& left, const BigNum& right, const BigNum& mod, const BigNum& montgomery_coefficient, const BigNum& coefficient) {
+    if(left >= mod || right >= mod) {
+        throw std::invalid_argument("Left and right in multiplyMontgomery must be < mod");
+    }
+    BigNum product = left * right;
+    BigNum temp = multiply(product, coefficient, montgomery_coefficient);
+    temp = product + temp * mod;
+    temp = extract(temp, montgomery_coefficient).first;
+    if(temp < mod) {
+        return temp;
+    } else {
+        return temp - mod;
+    }
+}
+
+BigNum powMontgomery(const BigNum& base, BigNum degree, const BigNum& mod) {
+    BigNum montgomery_coefficient = calculateMontgomeryCoefficient(mod);
+    BigNum mc_inverted = inverted(montgomery_coefficient, mod, BigNum::InversionPolicy::Euclid);
+    BigNum coefficient = extract(montgomery_coefficient * mc_inverted - 1_bn, mod).first;
+    std::pair<BigNum, BigNum> extraction;
+    BigNum base_mf = convertToMontgomeryForm(base, mod, montgomery_coefficient);
+    BigNum result = convertToMontgomeryForm(1_bn,mod,montgomery_coefficient);
+    while(degree > 0_bn) {
+        extraction = extract(degree, 2_bn);
+        if(extraction.second == 1_bn) {
+            result = multiplyMontgomery(result, base_mf, mod, montgomery_coefficient, coefficient);
+        }
+        degree = extraction.first;
+        base_mf = multiplyMontgomery(base_mf, base_mf, mod, montgomery_coefficient, coefficient);
+    }
+    result = multiply(result, mc_inverted, mod);
+    return result;
+}
 }
 
 lab::BigNum operator"" _bn(const char* str) {
