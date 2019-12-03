@@ -7,12 +7,11 @@ using lab::curveDataBase;
 #include "catch.hpp"
 
 TEST_CASE("Elliptic curves test", "[curves]") {
-   SECTION("Streaming an Elliptic Curve") {
-       std::stringstream out;
-       out << curveDataBase[0].curves[0];
-       REQUIRE(out.str() == "y^2 = x^3 + 228960*x + 91781 mod 234131");
+    SECTION("Streaming an Elliptic Curve") {
+        std::stringstream out;
+        out << curveDataBase[0].curves[0];
+        REQUIRE(out.str() == "y^2 = x^3 + 228960*x + 91781 mod 234131");
     }
-
     SECTION("Check if a point belongs to curve") {
         SECTION("Belongs") {
             lab::Point p = { 89_bn,320_bn };
@@ -25,7 +24,7 @@ TEST_CASE("Elliptic curves test", "[curves]") {
         }
     }
 
-    //TODO: do when sqrt is ready
+    //TODO: do when sqrt is read when sqry
     SECTION("Find points by x-coordinate") {
         
     }
@@ -55,7 +54,7 @@ TEST_CASE("Elliptic curves test", "[curves]") {
             lab::Point expected = { 96091_bn, 21870_bn };
             REQUIRE(expected == curveDataBase[0].curves[2].addPoints(p1, p2));
         }
-        //TODO
+        //TODO;
         SECTION("Challenging") {
 
         }
@@ -63,6 +62,43 @@ TEST_CASE("Elliptic curves test", "[curves]") {
             lab::Point p1 = {89_bn,320_bn};
             lab::Point p2 = { 89_bn,233811_bn };
             REQUIRE(lab::EllipticCurve::neutral == curveDataBase[0].curves[0].addPoints(p1, p2));
+        }
+    }
+
+    SECTION("Point to the power"){
+        SECTION("Power_0"){
+            lab::Point p1 = {3333_bn, 100_bn};
+            REQUIRE(lab::EllipticCurve::neutral == curveDataBase[1].curves[2].powerPoint(p1,0_bn));
+        }
+        SECTION("Power_1"){
+            lab::Point p1 = {325_bn, 3192_bn};
+            REQUIRE(p1 == curveDataBase[1].curves[0].powerPoint(p1,1_bn));
+        }
+        SECTION("Power_2"){
+            lab::Point p1 = {3333_bn, 100_bn};
+            lab::Point p2 = {3333_bn, 100_bn};
+            REQUIRE(curveDataBase[1].curves[2].addPoints(p1,p2) == curveDataBase[1].curves[2].powerPoint(p1,2_bn));
+        }
+        SECTION("Power_3"){
+            lab::Point p1 = {325_bn, 3192_bn};
+            REQUIRE(curveDataBase[1].curves[0].addPoints(curveDataBase[1].curves[0].addPoints(p1,p1),p1)
+                     == curveDataBase[1].curves[0].powerPoint(p1,3_bn));
+        }
+        SECTION("Power_5"){
+            lab::Point p1 = {7_bn, 18_bn};
+            lab::Point p2 = curveDataBase[2].curves[1].addPoints(p1,p1);
+            for(int i = 3; i <= 5; i++){
+                p2 = curveDataBase[2].curves[1].addPoints(p1,p2);
+            }
+            REQUIRE(p2 == curveDataBase[2].curves[1].powerPoint(p1,5_bn));
+        }
+        SECTION("Power_8"){
+            lab::Point p1 = {10_bn, 30_bn};
+            lab::Point p2 = curveDataBase[2].curves[2].addPoints(p1,p1);
+            for(int i = 3; i <= 8; i++){
+                p2 = curveDataBase[2].curves[2].addPoints(p1,p2);
+            }
+            REQUIRE(p2 == curveDataBase[2].curves[2].powerPoint(p1,8_bn));
         }
     }
 }
