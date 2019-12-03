@@ -26,7 +26,7 @@ bool EllipticCurve::contains(const Point& p) const {
 Point EllipticCurve::invertedPoint(const Point& p) const {
     if (p == neutral)
         return neutral;
-    return { p.x,_f->modulo - p.y };
+    return { p.x,subtract( _f->modulo, p.y,_f->modulo) };
 }
 
 Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
