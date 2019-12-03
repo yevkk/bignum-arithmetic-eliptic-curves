@@ -200,10 +200,10 @@ TEST_CASE("Big numbers test", "[BigNum]") {
 
     SECTION( "Extract BigNum" ) {
         SECTION( "easy" ) {
-            const BigNum a("123456");
-            const BigNum b("123");
-            REQUIRE(extract(a, b).first == BigNum("1003"));
-            REQUIRE(extract(a, b).second == BigNum("87"));
+            const BigNum a("1");
+            const BigNum b("2");
+            REQUIRE(a % b == 1_bn);
+            REQUIRE(a / b == 0_bn);
         }
 
         SECTION( "normal" ) {
@@ -278,6 +278,9 @@ TEST_CASE("Big numbers test", "[BigNum]") {
 
     SECTION( "Square root" ) {
         REQUIRE_FALSE(sqrt(2_bn, 4_bn).has_value());
+        //REQUIRE(sqrt(4_bn, 17_bn).value() == std::pair(2_bn, 15_bn));
+        REQUIRE(sqrt(2_bn, 7_bn).value() == std::pair(4_bn, 3_bn));
+        REQUIRE(sqrt(10007_bn, 20011_bn) == std::pair(5382_bn, 14629_bn));
     }
 
     SECTION("Calculate Montgomery coefficient") {

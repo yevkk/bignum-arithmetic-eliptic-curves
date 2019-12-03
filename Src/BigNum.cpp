@@ -29,6 +29,7 @@ BigNum::BigNum(std::string_view num_str) {
         }
         _digits.push_back(std::stoi(curr_section));
     }
+
     while (!_digits.empty() && _digits.back() == 0) {
         _digits.pop_back();
     }
@@ -312,8 +313,10 @@ bool lessNumPow(std::vector<char> &fnum, std::vector<char> &snum, int curr_pow)
 }
 
 std::pair<BigNum, BigNum> extract(const BigNum &left, const BigNum &right) {
-    if (left < right)
-        return std::pair<BigNum, BigNum>(BigNum("0"), left);
+    if (left < right) {
+        return std::pair<BigNum, BigNum>(0_bn, left);
+    }
+
     std::vector<char> fnum = toOneDigit(left);
     std::vector<char> snum = toOneDigit(right);
     std::vector<char> current = snum;
@@ -356,10 +359,10 @@ std::pair<BigNum, BigNum> extract(const BigNum &left, const BigNum &right) {
         current = snum;
     }
     std::reverse(result.begin(), result.end());
-    return std::pair<BigNum, BigNum>(toBigNum(result), toBigNum(fnum));
+    return std::pair{toBigNum(result), toBigNum(fnum)};
 }
 
-void modify(BigNum &num, const BigNum &mod) {
+void modify(BigNum& num, const BigNum& mod) {
     num = extract(num, mod).second;
 }
 
@@ -383,9 +386,8 @@ BigNum subtract(const BigNum &left, const BigNum &right, const BigNum &mod) {
     return result;
 }
 
-BigNum operator%(const BigNum &left, const BigNum &right) {
-    BigNum result = extract(left, right).second;
-    return result;
+BigNum operator%(const BigNum& left, const BigNum& right) {
+    return extract(left, right).second;
 }
 
 namespace {
@@ -625,10 +627,8 @@ BigNum inverted(const BigNum& num,
     }
 }
 
-BigNum operator/(const BigNum& left, const int right)
-{
-    // TODO: implement
-    return {};
+BigNum operator/(const BigNum& left, const BigNum& right) {
+    return extract(left, right).first;
 }
 
 std::optional<std::pair<BigNum, BigNum>> sqrt(const BigNum& n, const BigNum& p)
@@ -637,25 +637,26 @@ std::optional<std::pair<BigNum, BigNum>> sqrt(const BigNum& n, const BigNum& p)
 
     /// If it doesn't satisfy Fermat's little theorem than we can't find result
     /// TODO: replace this pow with Montgomery's one
-    if (pow(n, 2_bn, p) != 1_bn) {
+    if (pow(n, (p - 1_bn) / 2_bn, p) != 1_bn) {
         return {};
     }
 
     /// Attempt to find trivial solution
     const auto& [q, s] = [&] {
         auto q = p - 1_bn;
-        int s = 0;
+        auto s = 0_bn;
         while (q % 2_bn == 0_bn) {
-            q = q / 2;
-            ++s;
+            q = q / 2_bn;
+            s = s + 1_bn;
         }
 
         return std::pair{q, s};
     }();
 
     /// If p = 3 (mod 4) than solutions are trivial
-    if (s == 1) {
-        const auto x = pow(n, (p + 1_bn) / 4, p);
+    if (s == 1_bn) {
+        const auto x = pow(n, (p + 1_bn) / 4_bn, p);
+        std::cout << "Num:" << x << "|" << (p - x) << "\n";
         return std::pair{x, p - x};
     }
 
@@ -671,20 +672,31 @@ std::optional<std::pair<BigNum, BigNum>> sqrt(const BigNum& n, const BigNum& p)
     }();
 
     auto c = pow(z, q, p);
-    auto r = pow(n, (q + 1_bn) / 2, p);
+    auto r = pow(n, (q + 1_bn) / 2_bn, p);
     auto t = pow(n, q, p);
     auto m = s;
 
     while (t != 1_bn) {
+        const auto& [i, x] = [&] {
+            auto i = 1_bn;
+            auto x = t * t % p;
+            while (x != 1_bn) {
+                x = x * x % p;
+                i = i + 1_bn;
+            }
+
+            return std::pair(i, x);
+        }();
         
-        const auto b = pow(c, (1_bn), p);
+        const auto b = pow(c, pow(2_bn, (m - i - 1_bn), p), p);
 
         r = r * b % p;
         c = b * b % p;
         t = t * c % p;
-        
+        m = i;
     }
     
+    std::cout << "Num" << r << '\n';
     return std::pair{r, p - r};
 }
 

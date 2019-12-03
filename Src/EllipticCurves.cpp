@@ -78,4 +78,5 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
         return{ tmp1,tmp2 }; //{x3,y3} - answer
     }
 }
-}
+
+} // namespace lab

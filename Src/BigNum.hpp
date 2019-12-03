@@ -41,10 +41,10 @@ public:
      */
     friend BigNum operator-(const BigNum& left, const BigNum& right);
     friend BigNum operator+(const BigNum& left, const BigNum& right);
-    friend BigNum operator/(const BigNum& left, int right);
-    friend BigNum operator*(const BigNum& left, int right);
+    friend BigNum operator/(const BigNum& left, const BigNum& right);
     friend BigNum operator*(const BigNum& left, const BigNum& right);
     friend BigNum operator%(const BigNum& left, const BigNum& right);
+    friend BigNum operator*(const BigNum& left, int right);
 
     template<typename OStream>
     friend OStream& operator<<(OStream& os, const BigNum& num);
