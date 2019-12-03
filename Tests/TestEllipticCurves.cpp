@@ -37,7 +37,7 @@ TEST_CASE("Elliptic curves test", "[curves]") {
             REQUIRE(expected == curveDataBase[0].curves[2].invertedPoint(p));
         }
         SECTION("Point with y = 0") {
-            lab::Point p = { 234131_bn, 0_bn };
+            lab::Point p = { 234117_bn, 0_bn };
             REQUIRE(p == curveDataBase[0].curves[2].invertedPoint(p));
         }
     }
