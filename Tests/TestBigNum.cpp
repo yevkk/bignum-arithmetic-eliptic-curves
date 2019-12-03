@@ -240,6 +240,14 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             REQUIRE(extract(a, b).first == BigNum("268874922880981921356444837383660471746363637968708614244631874788091837363196835"));
             REQUIRE(extract(a, b).second == BigNum("1540141020615185186336802365801588561744233"));
         }
+
+        SECTION( "additional" ) {
+            const lab::BigNum a("800012");
+            const lab::BigNum b("2");
+            const auto res = extract(800012_bn, 2_bn);
+            REQUIRE(res.first == lab::BigNum("400006"));
+            REQUIRE(res.second == lab::BigNum("0"));
+        }
     }
 
     SECTION( "Multiplication" ) {
