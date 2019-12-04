@@ -444,4 +444,37 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             REQUIRE(length(num) == 25);
         }
     }
+
+//    SECTION("Pollard Factorization"){
+//        {
+//            const auto num = 8051_bn;
+//            std::vector<BigNum> result;
+//            result.push_back(83_bn);
+//            result.push_back(97_bn);
+//            REQUIRE(Pollard(num) == result);
+//        }
+//        {
+//            const auto num = 455459_bn;
+//            std::vector<BigNum> result;
+//            result.push_back(613_bn);
+//            result.push_back(743_bn);
+//            REQUIRE(Pollard(num) == result);
+//        }
+//    }
+//    SECTION("Naive Factorization"){
+//        {
+//            const auto num = 8051_bn;
+//            std::vector<BigNum> result;
+//            result.push_back(97_bn);
+//            result.push_back(83_bn);
+//            REQUIRE(Naive(num) == result);
+//        }
+//        {
+//            const auto num = 455459_bn;
+//            std::vector<BigNum> result;
+//            result.push_back(613_bn);
+//            result.push_back(743_bn);
+//            REQUIRE(Naive(num) == result);
+//        }
+//    }
 }

@@ -142,6 +142,12 @@ public:
      */
     friend int length(const BigNum &num);
 
+    /**
+     * @brief Factorizes BigNum
+     */
+     friend std::vector<BigNum> Pollard(const BigNum &num);
+     //friend std::vector<BigNum> Naive(const BigNum &num);
+
 private:
     /// Array of coefficients in representation
     std::vector<int64_t> _digits;
