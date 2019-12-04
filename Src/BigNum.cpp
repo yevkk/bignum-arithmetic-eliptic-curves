@@ -782,10 +782,28 @@ BigNum powMontgomery(const BigNum& base, BigNum degree, const BigNum& mod) {
     return result;
 }
 
+BigNum totientEulerFunc(BigNum mod) {
+    BigNum result = mod;
+    for(auto i = 2_bn; i * i <= mod; i = i + 1_bn) {
+        if(mod % i == 0_bn) {
+            while(mod % i == 0_bn) mod = mod / i;
+            result = result - (result / i);
+        }
+    }
+    if(mod > 1_bn) result = result - (result / mod);
+    return result;
+}
+
 BigNum elementOrder(const BigNum &num, const BigNum &mod) {
     BigNum result = mod;
-    BigNum temp = mod;
-    std::vector<std::pair<BigNum, BigNum>> pf; //< Prime factorization of mod.
+
+    /// Group order.
+    BigNum temp = totientEulerFunc(mod);
+
+    /// Prime factorization of mod.
+    std::vector<std::pair<BigNum, BigNum>> pf;
+
+    /// TODO Replace with factorization algorithm when it is ready.
     for(auto i = 2_bn; i <= temp / 2_bn && temp != 0_bn; i = i + 1_bn){
         if(isPrime(i) && temp % i == 0_bn) {
             pf.push_back(std::make_pair(i, 0_bn));
@@ -796,11 +814,11 @@ BigNum elementOrder(const BigNum &num, const BigNum &mod) {
         }
     }
 
-    for(const auto& i : pf){
-        result = result / pow(i.first, i.second, mod);
-        temp = pow(num, result, mod);
+    for(const auto& i : pf) {
+        result = result / powMontgomery(i.first, i.second, mod);
+        temp = powMontgomery(num, result, mod);
         while(temp != 1_bn) {
-            temp = pow(temp, i.first, mod);
+            temp = powMontgomery(temp, i.first, mod);
             std::cout<<temp<<"\n";
             result = result * i.first;
         }
