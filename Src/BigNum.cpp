@@ -28,13 +28,25 @@ BigNum::BigNum(std::string_view num_str) {
         }
         _digits.push_back(std::stoi(curr_section));
     }
-    while (!_digits.empty() && _digits.back() == 0) {
+    while (!_digits.empty() && (_digits.back() == 0)) {
         _digits.pop_back();
+    }
+    if (_digits.empty()) {
+        _digits.push_back(0);
     }
 }
 
 std::string to_string(const BigNum &num)
 {
+    bool is_empty = true;
+    for (auto &pos : num._digits) {
+        if (pos != 0) {
+            is_empty = false;
+        }
+    }
+    if (is_empty) {
+        return "0";
+    }
     std::string result;
     int leading_zeros = 0;
 
@@ -128,6 +140,12 @@ BigNum operator-(const BigNum &left, const BigNum &right) {
             result._digits[right._digits.size()] += NUM_BASE;
             result._digits[right._digits.size() + 1] -= 1;
         }
+    }
+    while (!result._digits.empty() && (result._digits.back() == 0)) {
+       result. _digits.pop_back();
+    }
+    if (result._digits.empty()) {
+        result._digits.push_back(0);
     }
     return result;
 }
@@ -344,7 +362,22 @@ std::pair<BigNum, BigNum> extract(const BigNum &left, const BigNum &right) {
         hight_rank = 1;
         current = snum;
     }
+
+    bool fail = false;
     std::reverse(result.begin(), result.end());
+    for (int i = 0; i < result.size(); ++i) {
+        if (result[i] > 9) {
+            fail = true;
+        }
+    }
+    if (fail) {
+        for (int i = 0; i < result.size(); ++i) {
+            //std::cout<<(int) result[i]<<" ";
+        }
+        //std::cout<<std::endl;
+        //std::cout<<left<<std::endl;
+        //std::cout<<right<<std::endl;
+    }
     return std::pair<BigNum, BigNum>(toBigNum(result), toBigNum(fnum));
 }
 
