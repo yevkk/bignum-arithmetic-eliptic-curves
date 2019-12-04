@@ -55,7 +55,7 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
             tmp1 = add(tmp1, _a, _f->modulo);//3*x1^2 + A
             tmp2 = multiply(2_bn, first.y, _f->modulo);//2y1
         }
-        m = multiply(tmp1, inverted(tmp2, _f->modulo, BigNum::InversionPolicy::Fermat), _f->modulo); //tmp1 / tmp2
+        m = multiply(tmp1,  inverted(tmp2,_f->modulo, BigNum::InversionPolicy::Fermat),_f->modulo); //tmp1 / tmp2
 
         tmp1 = multiply(m, m, _f->modulo);//= m^2
 
@@ -78,5 +78,4 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
         return{ tmp1,tmp2 }; //{x3,y3} - answer
     }
 }
-
-} // namespace lab
+}
