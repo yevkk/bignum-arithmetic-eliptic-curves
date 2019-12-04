@@ -54,7 +54,7 @@ public:
     Point invertedPoint(const Point& p) const;
 
     //TODO: fix namespace issue
-    /*
+    /**
     * @param Both points should belong to curve
     */
     Point addPoints(const Point& first, const Point& second) const;
