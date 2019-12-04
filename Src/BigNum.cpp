@@ -788,17 +788,21 @@ BigNum Pollard_Num(const BigNum& num){
     BigNum b = 2_bn;
     BigNum d;
     for (int i = 0; i >= 0; i++){
-        a = (a*a+1_bn)%num;
-        b = (b*b+1_bn)%num;
-        b = (b*b+1_bn)%num;
-        if (a > b)
+        a = (a * a + 1_bn) % num;
+        b = (b * b + 1_bn) % num;
+        b = (b * b + 1_bn) % num;
+        if (a > b){
             d = gcd(a - b, num);
-        else
+        }
+        else{
             d = gcd(b - a, num);
-        if (d > 1_bn && d < num)
+        }
+        if (d > 1_bn && d < num){
             return d;
-        else if (d == num)
+        }
+        else if (d == num) {
             return num;
+        }
     }
     return num;
 }
