@@ -363,21 +363,7 @@ std::pair<BigNum, BigNum> extract(const BigNum &left, const BigNum &right) {
         current = snum;
     }
 
-    bool fail = false;
     std::reverse(result.begin(), result.end());
-    for (int i = 0; i < result.size(); ++i) {
-        if (result[i] > 9) {
-            fail = true;
-        }
-    }
-    if (fail) {
-        for (int i = 0; i < result.size(); ++i) {
-            //std::cout<<(int) result[i]<<" ";
-        }
-        //std::cout<<std::endl;
-        //std::cout<<left<<std::endl;
-        //std::cout<<right<<std::endl;
-    }
     return std::pair<BigNum, BigNum>(toBigNum(result), toBigNum(fnum));
 }
 
