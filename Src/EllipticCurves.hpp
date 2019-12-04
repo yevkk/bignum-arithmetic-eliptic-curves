@@ -59,6 +59,8 @@ public:
     */
     Point addPoints(const Point& first, const Point& second) const;
 
+    Point powerPoint(const Point& p, const BigNum& a) const;
+
    private:
     /// y^2 = x^3 + a*x + b on field f
     Field* _f;

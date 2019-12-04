@@ -782,4 +782,37 @@ BigNum powMontgomery(const BigNum& base, BigNum degree, const BigNum& mod) {
     return result;
 }
 
+BigNum Pollard_Num(const BigNum& num){
+    BigNum res;
+    BigNum a = 2_bn;
+    BigNum b = 2_bn;
+    BigNum d;
+    for (int i = 0; i >= 0; i++){
+        a = (a * a + 1_bn) % num;
+        b = (b * b + 1_bn) % num;
+        b = (b * b + 1_bn) % num;
+        if (a > b){
+            d = gcd(a - b, num);
+        }
+        else{
+            d = gcd(b - a, num);
+        }
+        if (d > 1_bn && d < num){
+            return d;
+        }
+        else if (d == num) {
+            return num;
+        }
+    }
+    return num;
+}
+std::vector<BigNum> Pollard(const BigNum& num){
+    std::vector<BigNum> result;
+    BigNum res = Pollard_Num(num);
+    result.push_back(res);
+    result.push_back(num/res);
+    return result;
+}
+
+
 } // namespace lab
