@@ -135,7 +135,7 @@ public:
      * @param montgomery_coefficient = coprime and > mod
      * @param mod should be prime, but not obliged to
      */
-    friend BigNum powMontgomery(const BigNum &base, BigNum degree, const BigNum &mod);
+    friend BigNum powMontgomery(const BigNum& base, BigNum degree, const BigNum& mod);
 
     /**
      * @brief length of BigNum
@@ -148,14 +148,9 @@ private:
 };
 
 template<typename OStream>
-OStream& operator<<(OStream& os, const BigNum& num) {
-    for (auto it = num._digits.rbegin(); it != num._digits.rend(); ++it) {
-        std::string s(std::to_string(*it));
-        while (s.size() != 9 && it != num._digits.rbegin()) {
-            s.insert(0, "0");
-        }
-        os << s;
-    }
+OStream& operator<<(OStream& os, const BigNum& num)
+{
+    os << to_string(num);
     return os;
 }
 

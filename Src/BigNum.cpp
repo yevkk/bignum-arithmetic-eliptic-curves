@@ -29,14 +29,25 @@ BigNum::BigNum(std::string_view num_str) {
         }
         _digits.push_back(std::stoi(curr_section));
     }
-
     while (!_digits.empty() && _digits.back() == 0) {
         _digits.pop_back();
+    }
+    if (_digits.empty()) {
+        _digits.push_back(0);
     }
 }
 
 std::string to_string(const BigNum &num)
 {
+    bool is_empty = true;
+    for (auto &pos : num._digits) {
+        if (pos != 0) {
+            is_empty = false;
+        }
+    }
+    if (is_empty) {
+        return "0";
+    }
     std::string result;
     int leading_zeros = 0;
 
@@ -145,6 +156,12 @@ BigNum operator-(const BigNum &left, const BigNum &right) {
             result._digits[right._digits.size()] += NUM_BASE;
             result._digits[right._digits.size() + 1] -= 1;
         }
+    }
+    while (!result._digits.empty() && (result._digits.back() == 0)) {
+       result. _digits.pop_back();
+    }
+    if (result._digits.empty()) {
+        result._digits.push_back(0);
     }
     return result;
 }
@@ -358,6 +375,7 @@ std::pair<BigNum, BigNum> extract(const BigNum &left, const BigNum &right) {
         hight_rank = 1;
         current = snum;
     }
+
     std::reverse(result.begin(), result.end());
     return std::pair{toBigNum(result), toBigNum(fnum)};
 }
@@ -636,7 +654,6 @@ std::optional<std::pair<BigNum, BigNum>> sqrt(const BigNum& n, const BigNum& p)
     // NOTE: Names of variables are taken directly from Wikipedia for better understanding
 
     /// If it doesn't satisfy Fermat's little theorem than we can't find result
-    /// TODO: replace this pow with Montgomery's one
     if (pow(n, (p - 1_bn) / 2_bn, p) != 1_bn) {
         return {};
     }
@@ -656,14 +673,13 @@ std::optional<std::pair<BigNum, BigNum>> sqrt(const BigNum& n, const BigNum& p)
     /// If p = 3 (mod 4) than solutions are trivial
     if (s == 1_bn) {
         const auto x = pow(n, (p + 1_bn) / 4_bn, p);
-        std::cout << "Num:" << x << "|" << (p - x) << "\n";
         return std::pair{x, p - x};
     }
 
     /// Select a quadric non-residue (mod p)
     const auto z = [&] {
         for (auto i = 1_bn; i < p; i = i + 1_bn) {
-            if (pow(i, 2_bn, p) != 1_bn) {
+            if (pow(i, (p - 1_bn) / 2_bn, p) != 1_bn) {
                 return i;
             }
         }
@@ -690,13 +706,12 @@ std::optional<std::pair<BigNum, BigNum>> sqrt(const BigNum& n, const BigNum& p)
         
         const auto b = pow(c, pow(2_bn, (m - i - 1_bn), p), p);
 
-        r = r * b % p;
-        c = b * b % p;
-        t = t * c % p;
+        r = (r * b) % p;
+        c = (b * b) % p;
+        t = (t * c) % p;
         m = i;
     }
     
-    std::cout << "Num" << r << '\n';
     return std::pair{r, p - r};
 }
 
