@@ -444,4 +444,12 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             REQUIRE(length(num) == 25);
         }
     }
+
+    SECTION("BigNum element order"){
+        {
+            const auto num = 8_bn;
+            const auto mod = 17_bn;
+            REQUIRE(powMontgomery(num, elementOrder(num, mod), mod) == 1_bn);
+        }
+    }
 }

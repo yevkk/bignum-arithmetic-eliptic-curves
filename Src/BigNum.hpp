@@ -142,6 +142,8 @@ public:
      */
     friend int length(const BigNum &num);
 
+    friend BigNum elementOrder(const BigNum& num, const BigNum& mod);
+
 private:
     /// Array of coefficients in representation
     std::vector<int64_t> _digits;
