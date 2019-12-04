@@ -17,8 +17,8 @@ bool EllipticCurve::contains(const Point& p) const {
         return true;
     
     /// y^2 == x^3 + A*x + B
-    if (multiply(p.y, p.y, _f->modulo)
-           == add(multiply(multiply(p.x, p.x, _f->modulo), p.x, _f->modulo), add(multiply(_a, p.x, _f->modulo), _b, _f->modulo), _f->modulo))
+    if (powMontgomery(p.y, 2_bn, _f->modulo)
+           == add(powMontgomery(p.x, 3_bn,_f->modulo), add(multiply(_a, p.x, _f->modulo), _b, _f->modulo), _f->modulo))
        return true;
     else 
        return false;
@@ -50,7 +50,7 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
             tmp2 = subtract(second.x, first.x, _f->modulo);
         } else {
             ///x1^2
-            tmp1 = multiply(first.x, first.x, _f->modulo);
+            tmp1 = powMontgomery(first.x, 2_bn, _f->modulo);
             
             ///3*x1^2
             tmp1 = multiply(3_bn, tmp1, _f->modulo);
@@ -71,7 +71,7 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
         ///x1 + x2
         tmp2 = add(first.x, second.x, _f->modulo); 
 		
-        ///x3
+        ///x3 = m^2 - x1 - x2
         tmp1 = subtract(tmp1, tmp2, _f->modulo); 
 
         ///x1 - x3
@@ -80,7 +80,7 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
         ///m*(x1 - x3)
         tmp2 = multiply(m, tmp2, _f->modulo); 
         
-        ///y3
+        ///y3 = m*(x1 - x3) - y1
         tmp2 = subtract(tmp2, first.y, _f->modulo); 
 
         ///{x3,y3} - answer
