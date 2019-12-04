@@ -19,15 +19,26 @@ constexpr char SECTION_DIGITS = 9;
 
 } // <anonymous> namespace
 
+/**
+ * @brief Returns 10^power
+ */
+long long powTen(int power)
+{
+    int value = 1;
+    for (int i = 1; i <= power; ++i) {
+        value *= 10;
+    }
+    return value;
+}
 BigNum::BigNum(std::string_view num_str) {
     for (int i = num_str.size() - 1; i >= 0; i -= SECTION_DIGITS) {
-        std::string curr_section;
-        if (i - SECTION_DIGITS + 1 < 0) {
-            curr_section = num_str.substr(0, SECTION_DIGITS + (i - SECTION_DIGITS + 1));
-        } else {
-            curr_section = num_str.substr(i - SECTION_DIGITS + 1, SECTION_DIGITS);
+        int pos = 0;
+        long long value = 0;
+        while ((pos != SECTION_DIGITS) && (i-pos >= 0)) {
+            value = value + powTen(pos)*(num_str[i-pos] - '0');
+            ++pos;
         }
-        _digits.push_back(std::stoi(curr_section));
+        _digits.push_back(value);
     }
     while (!_digits.empty() && _digits.back() == 0) {
         _digits.pop_back();
