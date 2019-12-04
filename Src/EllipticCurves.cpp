@@ -26,7 +26,7 @@ bool EllipticCurve::contains(const Point& p) const {
 Point EllipticCurve::invertedPoint(const Point& p) const {
     if (p == neutral)
         return neutral;
-    return { p.x,_f->modulo - p.y };
+    return { p.x,subtract( _f->modulo, p.y,_f->modulo) };
 }
 
 Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
@@ -55,7 +55,7 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
             tmp1 = add(tmp1, _a, _f->modulo);//3*x1^2 + A
             tmp2 = multiply(2_bn, first.y, _f->modulo);//2y1
         }
-        m = multiply(tmp1,inverted(tmp2,_f->modulo, BigNum::InversionPolicy::Fermat),_f->modulo); //tmp1 / tmp2
+        m = multiply(tmp1, inverted(tmp2, _f->modulo, BigNum::InversionPolicy::Fermat), _f->modulo); //tmp1 / tmp2
 
         tmp1 = multiply(m, m, _f->modulo);//= m^2
 
@@ -79,24 +79,4 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
     }
 }
 
-/**
- * @brief Following function provides taking the point to the power of a
- */
-
-Point EllipticCurve::powerPoint(const Point& point, const BigNum& a) const {
-    if (a == 0_bn){
-        return neutral;
-    }
-    if (a == 1_bn){
-        return point;
-    }
-    std::pair<BigNum, BigNum> divMod = extract(a, 2_bn);
-    Point squared = powerPoint(point,divMod.first); // let squared be point^(a/2)
-    if(divMod.second == 0_bn) { // checking if a % 2 == 0
-        return addPoints(squared,squared);
-
-    } else {
-        return addPoints(addPoints(squared,squared),point);
-    }
-}
-}
+} // namespace lab
