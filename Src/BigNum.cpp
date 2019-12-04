@@ -782,6 +782,39 @@ BigNum powMontgomery(const BigNum& base, BigNum degree, const BigNum& mod) {
     return result;
 }
 
+BigNum Pollard_Num(const BigNum& num){
+    BigNum res;
+    BigNum a = 2_bn;
+    BigNum b = 2_bn;
+    BigNum d;
+    for (int i = 0; i >= 0; i++){
+        a = (a * a + 1_bn) % num;
+        b = (b * b + 1_bn) % num;
+        b = (b * b + 1_bn) % num;
+        if (a > b){
+            d = gcd(a - b, num);
+        }
+        else{
+            d = gcd(b - a, num);
+        }
+        if (d > 1_bn && d < num){
+            return d;
+        }
+        else if (d == num) {
+            return num;
+        }
+    }
+    return num;
+}
+std::vector<BigNum> Pollard(const BigNum& num){
+    std::vector<BigNum> result;
+    BigNum res = Pollard_Num(num);
+    result.push_back(res);
+    result.push_back(num/res);
+    return result;
+}
+
+
 BigNum totientEulerFunc(BigNum mod) {
     BigNum result = mod;
     for(auto i = 2_bn; i * i <= mod; i = i + 1_bn) {
@@ -801,7 +834,7 @@ BigNum elementOrder(const BigNum &num, const BigNum &mod) {
     std::vector<std::pair<BigNum, BigNum>> pf;
     BigNum temp = result;
 
-    /// TODO Replace with factorization algorithm when it is ready.
+    //Naive factorization
     for(auto i = 2_bn; i <= temp && temp >= 1_bn; i = i + 1_bn){
         if(isPrime(i) && temp % i == 0_bn) {
             pf.push_back(std::make_pair(i, 0_bn));
