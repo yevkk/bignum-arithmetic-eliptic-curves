@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <iterator>
+#include <set>
 
 namespace lab {
 
@@ -781,5 +782,54 @@ BigNum powMontgomery(const BigNum& base, BigNum degree, const BigNum& mod) {
     result = multiply(result, mc_inverted, mod);
     return result;
 }
+
+BigNum sqrt(const BigNum& num) {
+    if (num == 1_bn) {
+        return 1_bn;
+    }
+
+    BigNum res = num / 2_bn;
+    BigNum left = 0_bn, right = num;
+
+    while(true) {
+        BigNum sqr = res * res;
+        BigNum res_plus = res + 1_bn;
+        BigNum res_minus = res - 1_bn;
+
+        if (sqr == num) {
+            return res;
+        }
+
+        if (sqr < num) {
+            if ((res_plus) * (res_plus) > num) {
+                return res;
+            }
+
+            left = res;
+            try {
+                res = (right + left) * 2 / 4_bn;
+            } catch(std::exception e) {
+                std::cout << left << std::endl << right << std::endl << std::endl;
+            }
+
+        } else {
+            if ((res_minus) * (res_minus) < num) {
+                return res_minus;
+            }
+            right = res;
+            try {
+                res = (right + left) * 2 / 4_bn;
+            } catch(std::exception e) {
+                std::cout << left << std::endl << right << std::endl << std::endl;
+            }
+        }
+    }
+}
+
+BigNum log(const BigNum& num, const BigNum& base, const BigNum& mod) {
+    BigNum sqrt_mod = sqrt(mod);
+
+}
+
 
 } // namespace lab

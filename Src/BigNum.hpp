@@ -68,7 +68,7 @@ public:
 
 
     /**
-     * @brief Multiplication of two numbers by Karatsuba or Montgomery algorithm
+     * @brief Multiplication of two numbers
      */
     friend BigNum multiply(const BigNum& lhs, const BigNum& rhs, const BigNum& mod);
 
@@ -137,6 +137,11 @@ public:
      */
     friend BigNum powMontgomery(const BigNum& base, BigNum degree, const BigNum& mod);
 
+    friend BigNum sqrt(const BigNum&);
+
+    /*
+     * */
+    friend BigNum log(const BigNum&, const BigNum&, const BigNum&);
     /**
      * @brief length of BigNum
      */

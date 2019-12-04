@@ -444,4 +444,87 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             REQUIRE(length(num) == 25);
         }
     }
+
+    SECTION("sqrt of BigNum") {
+
+        SECTION("easy") {
+            {
+                const auto num = 8_bn;
+                REQUIRE(sqrt(num) == 2_bn);
+            }
+            {
+                const auto num = 25_bn;
+                REQUIRE(sqrt(num) == 5_bn);
+            }
+            {
+                const auto num = 101_bn;
+                REQUIRE(sqrt(num) == 10_bn);
+            }
+            {
+                const auto num = 260_bn;
+                REQUIRE(sqrt(num) == 16_bn);
+            }
+            {
+                const auto num = 0_bn;
+                REQUIRE(sqrt(num) == 0_bn);
+            }
+            {
+                const auto num = 1_bn;
+                REQUIRE(sqrt(num) == 1_bn);
+            }
+            {
+                const auto num = 3_bn;
+                REQUIRE(sqrt(num) == 1_bn);
+            }
+        }
+
+        SECTION("normal") {
+            {
+                const auto num = 123443_bn;
+                REQUIRE(sqrt(num) == 351_bn);
+            }
+            {
+                const auto num = 77777_bn;
+                REQUIRE(sqrt(num) == 278_bn);
+            }
+            {
+                const auto num = 100984_bn;
+                REQUIRE(sqrt(num) == 317_bn);
+            }
+            {
+                const auto num = 87543000_bn;
+                REQUIRE(sqrt(num) == 9356_bn);
+            }
+            {
+                const auto num = 1000000000_bn;
+                REQUIRE(sqrt(num) == 31622_bn);
+            }
+        }
+
+        SECTION("difficult") {
+            {
+                const auto num = 124618746182765925923859238750_bn;
+                REQUIRE(sqrt(num) == 353013804521531_bn);
+            }
+            {
+                const auto num = 78357937926598235037609376072096706_bn;
+                REQUIRE(sqrt(num) == 279924879077580803_bn);
+            }
+            {
+                const auto num = 209352075289659265983270437673534636322_bn;
+                REQUIRE(sqrt(num) == 14469003949465881114_bn);
+            }
+            {
+                const auto num = 138429562952385082365083608058283063760_bn;
+                REQUIRE(sqrt(num) == 11765609331963435643_bn);
+            }
+            {
+                const auto num = 348563496834760374863470673046703476037_bn;
+                REQUIRE(sqrt(num) == 18669855297638500306_bn);
+            }
+
+
+        }
+
+    }
 }
