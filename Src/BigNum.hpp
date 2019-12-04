@@ -145,7 +145,7 @@ private:
 template<typename OStream>
 OStream& operator<<(OStream& os, const BigNum& num)
 {
-    os<<to_string(num);
+    os << to_string(num);
     return os;
 }
 
