@@ -795,16 +795,14 @@ BigNum totientEulerFunc(BigNum mod) {
 }
 
 BigNum elementOrder(const BigNum &num, const BigNum &mod) {
-    BigNum result = mod;
-
     /// Group order.
-    BigNum temp = totientEulerFunc(mod);
-
-    /// Prime factorization of mod.
+    BigNum result = totientEulerFunc(mod);
+    /// Prime factorization of group order.
     std::vector<std::pair<BigNum, BigNum>> pf;
+    BigNum temp = result;
 
     /// TODO Replace with factorization algorithm when it is ready.
-    for(auto i = 2_bn; i <= temp / 2_bn && temp != 0_bn; i = i + 1_bn){
+    for(auto i = 2_bn; i <= temp && temp >= 1_bn; i = i + 1_bn){
         if(isPrime(i) && temp % i == 0_bn) {
             pf.push_back(std::make_pair(i, 0_bn));
             do {
@@ -815,11 +813,10 @@ BigNum elementOrder(const BigNum &num, const BigNum &mod) {
     }
 
     for(const auto& i : pf) {
-        result = result / powMontgomery(i.first, i.second, mod);
-        temp = powMontgomery(num, result, mod);
+        result = result / pow(i.first, i.second, mod);
+        temp = pow(num, result, mod);
         while(temp != 1_bn) {
             temp = powMontgomery(temp, i.first, mod);
-            std::cout<<temp<<"\n";
             result = result * i.first;
         }
     }

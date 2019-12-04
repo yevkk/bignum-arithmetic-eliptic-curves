@@ -451,5 +451,15 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             const auto mod = 17_bn;
             REQUIRE(powMontgomery(num, elementOrder(num, mod), mod) == 1_bn);
         }
+        {
+            const auto num = 453_bn;
+            const auto mod = 9227_bn;
+            REQUIRE(powMontgomery(num, elementOrder(num, mod), mod) == 1_bn);
+        }
+        {
+            const auto num = 12345_bn;
+            const auto mod = 62478_bn;
+            REQUIRE(powMontgomery(num, elementOrder(num, mod), mod) == 1_bn);
+        }
     }
 }
