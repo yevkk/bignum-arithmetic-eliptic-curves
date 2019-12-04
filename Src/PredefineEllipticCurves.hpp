@@ -11,12 +11,12 @@ struct FieldMeta {
     std::array<EllipticCurve, CURVES_PER_FIELED>  curves;
 };
     
-/*
+/**
 * @brief Elliptic curves database with thier labels on https://www.lmfdb.org/EllipticCurve/Q/
 *        (paste label into a box near the big blue button)
 */
-static const int FIELD_NUMBER = 3;
-static const FieldMeta curveDataBase[] = { 
+inline const int FIELD_NUMBER = 3;
+inline const FieldMeta curveDataBase[] = {
     {Field(234131_bn),
         {EllipticCurve(new Field(234131_bn),228960_bn,91781_bn), //100016.g1
          EllipticCurve(new Field(234131_bn),3133_bn,46606_bn), //100040.g1

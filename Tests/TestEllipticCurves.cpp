@@ -26,10 +26,6 @@ TEST_CASE("Elliptic curves test", "[curves]") {
         }
     }
 
-    SECTION("Find points by x-coordinate") {
-        //TODO: do when sqrt is ready
-    }
-
     SECTION("Inverted point") {
         SECTION("Regular point") {
             lab::Point p = { 535_bn, 12444_bn };
@@ -55,10 +51,6 @@ TEST_CASE("Elliptic curves test", "[curves]") {
             lab::Point p2 = { 110_bn,574_bn };
             lab::Point expected = { 96091_bn, 21870_bn };
             REQUIRE(expected == curveDataBase[0].curves[2].addPoints(p1, p2));
-        }
-
-        SECTION("Challenging") {
-            //TODO
         }
 
         SECTION("Neutral point") {
