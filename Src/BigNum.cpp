@@ -809,19 +809,6 @@ std::vector<BigNum> Pollard(const BigNum& num){
     result.push_back(num/res);
     return result;
 }
-//std::vector<BigNum> Naive(const BigNum& num){
-//    BigNum N = num;
-//    std::vector<BigNum> result;
-//    BigNum a = 2_bn;
-//    while (N != 1_bn){
-//        if (N%a != 0_bn)
-//            a = a + a;
-//        else{
-//            result.push_back(a);
-//            N = N / a;
-//        }
-//    }
-//    return result;
-//}
+
 
 } // namespace lab
