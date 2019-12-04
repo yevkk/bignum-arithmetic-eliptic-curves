@@ -145,12 +145,7 @@ private:
 template<typename OStream>
 OStream& operator<<(OStream& os, const BigNum& num)
 {
-    for (auto it = num._digits.rbegin(); it != num._digits.rend(); ++it) {
-        std::string s(std::to_string(*it));
-        while (s.size() != 9 && it != num._digits.rbegin())
-            s.insert(0, "0");
-        os << s;
-    }
+    os << to_string(num);
     return os;
 }
 
