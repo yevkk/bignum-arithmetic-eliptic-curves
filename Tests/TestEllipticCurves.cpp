@@ -102,4 +102,20 @@ TEST_CASE("Elliptic curves test", "[curves]") {
             REQUIRE(p2 == curveDataBase[2].curves[2].powerPoint(p1, 8_bn));
         }
     }
+
+    SECTION("Point Order"){
+        SECTION("Bortnik"){
+            const lab::Point p1 = { 769_bn, 7_bn };
+
+
+            REQUIRE(curveDataBase[2].curves[0].powerPoint(p1, 383_bn) == EllipticCurve::neutral);
+            REQUIRE(curveDataBase[2].curves[0].pointOrder(p1) == 383_bn);
+        }
+
+        SECTION("Golovach"){
+            const lab::Point p1 = {7_bn, 18_bn};
+            REQUIRE(curveDataBase[2].curves[1].powerPoint(p1, 766_bn) == EllipticCurve::neutral);
+            REQUIRE(curveDataBase[2].curves[1].pointOrder(p1) == 766_bn);
+        }
+    }
 }
