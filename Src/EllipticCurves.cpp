@@ -17,8 +17,7 @@ bool EllipticCurve::contains(const Point& p) const {
         return true;
 
     /// y^2 == x^3 + A*x + B
-    if (powMontgomery(p.y, 2_bn, _f->modulo)
-           == add(powMontgomery(p.x, 3_bn,_f->modulo), add(multiply(_a, p.x, _f->modulo), _b, _f->modulo), _f->modulo))
+    if ((p.y * p.y) % _f->modulo == ((p.x * p.x * p.x + _a * p.x + _b) % _f->modulo))
        return true;
     else
        return false;
