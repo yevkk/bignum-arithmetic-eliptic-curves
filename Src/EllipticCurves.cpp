@@ -108,6 +108,9 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
         }
     }
 
+BigNum EllipticCurve::getFieldModulo() const{
+    return _f->modulo;
+}
 
     BigNum EllipticCurve::pointOrder(const Point& p) const {
 
