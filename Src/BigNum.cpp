@@ -894,29 +894,45 @@ BigNum Pollard_Num(const BigNum& num){
     }
     return num;
 }
-std::vector<BigNum> Pollard(const BigNum& num){
-    std::vector<BigNum> result;
-    BigNum res = Pollard_Num(num);
-    result.push_back(res);
-    result.push_back(num/res);
-    return result;
-}
-
-std::vector<std::pair<BigNum, BigNum>> factorization(BigNum n) {
-    std::vector<std::pair<BigNum, BigNum>> result;
-    for (BigNum i = 2_bn; i * i <= n; i = i + 1_bn) {
-        BigNum k = 0_bn;
-        while (n % i == 0_bn) {
-            k = k + 1_bn;
-            n = n / i;
-        }
-        if (k != 0_bn) result.emplace_back(i, k);
-
+    std::vector<BigNum> Pollard(const BigNum& num){
+        if (num == 1_bn) return {};
+        BigNum res = Pollard_Num(num);
+        std::vector<BigNum> result(Pollard(num/res));
+        result.push_back(res);
+        return result;
     }
-    if (n != 1_bn)
-        result.emplace_back(n, 1_bn);
-    return result;
-}
+
+    std::vector<BigNum> Naive(const BigNum& num){
+        BigNum N = num;
+        std::vector<BigNum> result;
+        BigNum a = 2_bn;
+        while (N != 1_bn){
+            if (N % a != 0_bn)
+                a = a + 1_bn;
+            else{
+                result.push_back(a);
+                N = N / a;
+            }
+        }
+        return result;
+    }
+
+
+    std::vector<std::pair<BigNum, BigNum>> factorization(BigNum n) {
+        std::vector<std::pair<BigNum, BigNum>> result;
+        for (BigNum i = 2_bn; i * i <= n; i = i + 1_bn) {
+            BigNum k = 0_bn;
+            while (n % i == 0_bn) {
+                k = k + 1_bn;
+                n = n / i;
+            }
+            if (k != 0_bn) result.emplace_back(i, k);
+
+        }
+        if (n != 1_bn)
+            result.emplace_back(n, 1_bn);
+        return result;
+    }
 
 
 BigNum totientEulerFunc(BigNum mod) {

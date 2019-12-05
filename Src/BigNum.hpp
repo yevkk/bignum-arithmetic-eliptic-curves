@@ -168,6 +168,9 @@ public:
      */
     friend BigNum elementOrder(const BigNum& num, const BigNum& mod);
 
+    friend std::vector<BigNum> Naive(const BigNum &num);
+
+
      /**
       * @brief Factorizes BigNum
       * @return Vector of pairs where in pair first number is prime and second is its exponent
