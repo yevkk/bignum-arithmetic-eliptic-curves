@@ -154,6 +154,12 @@ public:
      */
      friend std::vector<BigNum> Pollard(const BigNum &num);
 
+     /**
+      * @brief Factorizes BigNum
+      * @return Vector of pairs where in pair first number is prime and second is its exponent
+      * */
+     friend std::vector<std::pair<BigNum, BigNum>> factorization(BigNum num);
+
 private:
     /// Array of coefficients in representation
     std::vector<int64_t> _digits;

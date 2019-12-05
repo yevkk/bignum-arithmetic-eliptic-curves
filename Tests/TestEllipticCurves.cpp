@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include "catch.hpp"
-/*
+
 TEST_CASE("Elliptic curves test", "[curves]") {
     using namespace lab;
 
@@ -102,4 +102,16 @@ TEST_CASE("Elliptic curves test", "[curves]") {
             REQUIRE(p2 == curveDataBase[2].curves[2].powerPoint(p1, 8_bn));
         }
     }
-}*/
+
+    SECTION("Point Order"){
+        SECTION("Bortnik"){
+            const lab::Point p1 = { 769_bn, 7_bn };
+
+            REQUIRE(curveDataBase[2].curves[0].pointOrder(p1) == 775_bn);
+        }
+
+        SECTION("Golovach"){
+
+        }
+    }
+}
