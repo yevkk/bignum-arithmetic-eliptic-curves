@@ -445,7 +445,7 @@ TEST_CASE("Big numbers test", "[BigNum]") {
         }
     }
 
-    SECTION("BigNum element order"){
+    SECTION("BigNum element order") {
         {
             const auto num = 8_bn;
             const auto mod = 17_bn;
@@ -463,8 +463,7 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             REQUIRE(powMontgomery(num, elementOrder(num, mod), mod) == 1_bn);
         }
     }
-
-
+ 
     SECTION("Factorization II"){
         SECTION("Rudenko"){
             const auto num = 15_bn;
@@ -632,4 +631,6 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             }
         }
     }
+
+
 }
