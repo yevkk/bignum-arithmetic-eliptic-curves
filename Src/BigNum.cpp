@@ -814,5 +814,21 @@ std::vector<BigNum> Pollard(const BigNum& num){
     return result;
 }
 
+std::vector<std::pair<BigNum, BigNum>> factorization(BigNum n) {
+    std::vector<std::pair<BigNum, BigNum>> result;
+    for (BigNum i = 2_bn; i * i <= n; i = i + 1_bn) {
+        BigNum k = 0_bn;
+        while (n % i == 0_bn) {
+            k = k + 1_bn;
+            n = n / i;
+        }
+        if (k != 0_bn) result.emplace_back(i, k);
+
+    }
+    if (n != 1_bn)
+        result.emplace_back(n, 1_bn);
+    return result;
+}
+
 
 } // namespace lab

@@ -444,4 +444,39 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             REQUIRE(length(num) == 25);
         }
     }
+
+
+    SECTION("Factorization II"){
+        SECTION("Rudenko"){
+            const auto num = 15_bn;
+            std::vector<std::pair<BigNum, BigNum>> result = {{3_bn, 1_bn}, {5_bn, 1_bn}};
+            REQUIRE(factorization(num) == result);
+        }
+
+        SECTION("Tiapko"){
+            const auto num = 108_bn;
+            std::vector<std::pair<BigNum, BigNum>> result = {{2_bn, 2_bn}, {3_bn, 3_bn}};
+            REQUIRE(factorization(num) == result);
+        }
+
+        SECTION("Hryhorchuk"){
+            const auto num = 461332_bn;
+            std::vector<std::pair<BigNum, BigNum>> result = {{2_bn, 2_bn},
+                                                             {29_bn, 1_bn},
+                                                             {41_bn, 1_bn},
+                                                             {97_bn, 1_bn}};
+            REQUIRE(factorization(num) == result);
+        }
+
+        SECTION("Oleksyshyn"){
+            const auto num = 87348672309467038662900_bn;
+            std::vector<std::pair<BigNum, BigNum>> result = {{2_bn, 2_bn},
+                                                             {3_bn, 4_bn},
+                                                             {5_bn, 2_bn},
+                                                             {4421_bn, 1_bn},
+                                                             {8863_bn, 1_bn},
+                                                             {275213684783_bn, 1_bn}};
+            REQUIRE(factorization(num) == result);
+        }
+    }
 }
