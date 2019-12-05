@@ -869,7 +869,6 @@ BigNum logStep(const BigNum& num, const BigNum& base, const BigNum& mod) {
 
 }
 
-
 BigNum Pollard_Num(const BigNum& num){
     BigNum res;
     BigNum a = 2_bn;
@@ -894,6 +893,7 @@ BigNum Pollard_Num(const BigNum& num){
     }
     return num;
 }
+
 std::vector<BigNum> Pollard(const BigNum& num){
     std::vector<BigNum> result;
     BigNum res = Pollard_Num(num);
