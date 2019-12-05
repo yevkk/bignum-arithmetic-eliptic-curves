@@ -445,7 +445,25 @@ TEST_CASE("Big numbers test", "[BigNum]") {
         }
     }
 
+    SECTION("BigNum element order") {
+        {
+            const auto num = 8_bn;
+            const auto mod = 17_bn;
+            REQUIRE(powMontgomery(num, elementOrder(num, mod), mod) == 1_bn);
+        }
+        {
+            const auto num = 453_bn;
+            const auto mod = 9227_bn;
+            REQUIRE(powMontgomery(num, elementOrder(num, mod), mod) == 1_bn);
+        }
 
+        {
+            const auto num = 4420_bn;
+            const auto mod = 9227_bn;
+            REQUIRE(powMontgomery(num, elementOrder(num, mod), mod) == 1_bn);
+        }
+    }
+ 
     SECTION("Factorization II"){
         SECTION("Rudenko"){
             const auto num = 15_bn;
@@ -613,4 +631,6 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             }
         }
     }
+
+
 }
