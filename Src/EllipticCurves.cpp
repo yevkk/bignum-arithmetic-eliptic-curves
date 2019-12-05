@@ -197,26 +197,4 @@ BigNum EllipticCurve::getFieldModulo() const{
 
         return M;
     }
-
-    BigNum EllipticCurve::countPoints() const {
-        BigNum left = _f->modulo + 1_bn - 2_bn * sqrt(_f->modulo);
-        BigNum right = _f->modulo + 1_bn + 2_bn * sqrt(_f->modulo);
-        BigNum lcm = 1_bn;
-        BigNum x = 1_bn;
-        std::cout << left << " " << right <<  "\n";
-        while (!(left <= lcm && lcm <= right)){
-            while (!sqrt(x * x * x + x * _a + _b, _f->modulo) ||
-                   !contains(Point(x, sqrt(x * x * x + x * _a + _b, _f->modulo)->second))){
-                x = x + 1_bn;
-            }
-            Point point = Point(x, sqrt(x * x * x + x * _a + _b, _f->modulo)->second);
-            if (contains(point)) {
-                BigNum point_order = pointOrder(point);
-                lcm = point_order * lcm / gcd(point_order, lcm);
-            }
-
-            std::cout << lcm;
-        }
-        return lcm;
-    }
 }
