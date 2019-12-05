@@ -445,7 +445,7 @@ TEST_CASE("Big numbers test", "[BigNum]") {
         }
     }
 
-    SECTION("BigNum element order"){
+    SECTION("BigNum element order") {
         {
             const auto num = 8_bn;
             const auto mod = 17_bn;
@@ -461,6 +461,174 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             const auto num = 4420_bn;
             const auto mod = 9227_bn;
             REQUIRE(powMontgomery(num, elementOrder(num, mod), mod) == 1_bn);
+        }
+    }
+ 
+    SECTION("Factorization II"){
+        SECTION("Rudenko"){
+            const auto num = 15_bn;
+            std::vector<std::pair<BigNum, BigNum>> result = {{3_bn, 1_bn}, {5_bn, 1_bn}};
+            REQUIRE(factorization(num) == result);
+        }
+
+        SECTION("Tiapko"){
+            const auto num = 108_bn;
+            std::vector<std::pair<BigNum, BigNum>> result = {{2_bn, 2_bn}, {3_bn, 3_bn}};
+            REQUIRE(factorization(num) == result);
+        }
+
+        SECTION("Hryhorchuk"){
+            const auto num = 461332_bn;
+            std::vector<std::pair<BigNum, BigNum>> result = {{2_bn, 2_bn},
+                                                             {29_bn, 1_bn},
+                                                             {41_bn, 1_bn},
+                                                             {97_bn, 1_bn}};
+            REQUIRE(factorization(num) == result);
+        }
+
+        SECTION("Oleksyshyn"){
+            const auto num = 87348672309467038662900_bn;
+            std::vector<std::pair<BigNum, BigNum>> result = {{2_bn, 2_bn},
+                                                             {3_bn, 4_bn},
+                                                             {5_bn, 2_bn},
+                                                             {4421_bn, 1_bn},
+                                                             {8863_bn, 1_bn},
+                                                             {275213684783_bn, 1_bn}};
+            REQUIRE(factorization(num) == result);
+        }
+    }
+
+    SECTION("sqrt of BigNum") {
+
+        SECTION("easy") {
+            {
+                const auto num = 8_bn;
+                REQUIRE(sqrt(num) == 2_bn);
+            }
+            {
+                const auto num = 25_bn;
+                REQUIRE(sqrt(num) == 5_bn);
+            }
+            {
+                const auto num = 101_bn;
+                REQUIRE(sqrt(num) == 10_bn);
+            }
+            {
+                const auto num = 260_bn;
+                REQUIRE(sqrt(num) == 16_bn);
+            }
+            {
+                const auto num = 0_bn;
+                REQUIRE(sqrt(num) == 0_bn);
+            }
+            {
+                const auto num = 1_bn;
+                REQUIRE(sqrt(num) == 1_bn);
+            }
+            {
+                const auto num = 3_bn;
+                REQUIRE(sqrt(num) == 1_bn);
+            }
+        }
+
+        SECTION("normal") {
+            {
+                const auto num = 123443_bn;
+                REQUIRE(sqrt(num) == 351_bn);
+            }
+            {
+                const auto num = 77777_bn;
+                REQUIRE(sqrt(num) == 278_bn);
+            }
+            {
+                const auto num = 100984_bn;
+                REQUIRE(sqrt(num) == 317_bn);
+            }
+            {
+                const auto num = 87543000_bn;
+                REQUIRE(sqrt(num) == 9356_bn);
+            }
+            {
+                const auto num = 1000000000_bn;
+                REQUIRE(sqrt(num) == 31622_bn);
+            }
+        }
+
+        SECTION("difficult") {
+            {
+                const auto num = 124618746182765925923859238750_bn;
+                REQUIRE(sqrt(num) == 353013804521531_bn);
+            }
+            {
+                const auto num = 78357937926598235037609376072096706_bn;
+                REQUIRE(sqrt(num) == 279924879077580803_bn);
+            }
+            {
+                const auto num = 209352075289659265983270437673534636322_bn;
+                REQUIRE(sqrt(num) == 14469003949465881114_bn);
+            }
+            {
+                const auto num = 138429562952385082365083608058283063760_bn;
+                REQUIRE(sqrt(num) == 11765609331963435643_bn);
+            }
+            {
+                const auto num = 348563496834760374863470673046703476037_bn;
+                REQUIRE(sqrt(num) == 18669855297638500306_bn);
+            }
+        }
+    }
+
+    SECTION("log of BigNum") {
+        SECTION("easy") {
+            {
+                REQUIRE(logStep(57_bn, 3_bn, 113_bn) == 100_bn);
+            }
+            {
+                REQUIRE(logStep(1_bn, 2_bn, 1000_bn) == 0_bn);
+            }
+            {
+                REQUIRE(logStep(40_bn, 10_bn, 127_bn) == 13_bn);
+            }
+            {
+                REQUIRE(logStep(88_bn, 17_bn, 149_bn) == 20_bn);
+            }
+            {
+                REQUIRE(logStep(80_bn, 43_bn, 181_bn) == 26_bn);
+            }
+            {
+                REQUIRE(logStep(74_bn, 9_bn, 163_bn) == 13_bn);
+            }
+        }
+        SECTION("normal") {
+            {
+                REQUIRE(logStep(47_bn, 142_bn, 367_bn) == 38_bn);
+            }
+            {
+                REQUIRE(logStep(244_bn, 99_bn, 257_bn) == 71_bn);
+            }
+            {
+                REQUIRE(logStep(276_bn, 117_bn, 449_bn) == 101_bn);
+            }
+            {
+                REQUIRE(logStep(48_bn, 261_bn, 683_bn) == 333_bn);
+            }
+            {
+                REQUIRE(logStep(718_bn, 391_bn, 947_bn) == 72_bn);
+            }
+        }
+        SECTION("difficult") {
+            {
+                REQUIRE(logStep(46304_bn, 1234_bn, 1000669_bn) == 333867_bn);
+            }
+            {
+                REQUIRE(logStep(207775_bn, 512_bn, 1012861_bn) == 44112_bn);
+            }
+            {
+                REQUIRE(logStep(1041299_bn, 46327_bn, 2511953_bn) == 81743_bn);
+            }
+            {
+                REQUIRE(logStep(2749733_bn, 95518_bn, 3920239_bn) == 39227_bn);
+            }
         }
     }
 }
