@@ -135,6 +135,9 @@ BigNum operator+(const BigNum &left, const BigNum &right) {
             addition = result._digits[curr_pos] / NUM_BASE;
             result._digits[curr_pos] = result._digits[curr_pos] % NUM_BASE;
         }
+        if (addition != 0) {
+            result._digits[left._digits.size()-1] += addition;
+        }
 
         return result;
     } else {
@@ -147,6 +150,13 @@ BigNum operator+(const BigNum &left, const BigNum &right) {
             result._digits[curr_pos] = temp % NUM_BASE;
             addition = temp / NUM_BASE;
             result._digits[curr_pos] = result._digits[curr_pos] % NUM_BASE;
+        }
+        if (addition != 0) {
+            if (left._digits.size() == right._digits.size()) {
+                result._digits.push_back(addition);
+            } else {
+                result._digits[right._digits.size()-1] += addition;
+            }
         }
 
         return result;
@@ -342,6 +352,9 @@ bool lessNumPow(std::vector<char> &fnum, std::vector<char> &snum, int curr_pow)
 }
 
 std::pair<BigNum, BigNum> extract(const BigNum &left, const BigNum &right) {
+    if (right == 0_bn) {
+        throw std::invalid_argument("Second num must not be 0");
+    }
     if (left < right) {
         return std::pair<BigNum, BigNum>(0_bn, left);
     }
@@ -645,10 +658,11 @@ BigNum inverted(const BigNum& num,
 
         return inverted;
     } else {
+#ifdef ENABLE_IS_PRIME_CHECK
         if (!isPrime(mod)) {
             throw std::invalid_argument("Mod must be prime.");
         }
-
+#endif
         if (gcd(num, mod) != 1_bn) {
             throw std::invalid_argument("Nums must be coprime.");
         }
@@ -948,28 +962,20 @@ BigNum totientEulerFunc(BigNum mod) {
 }
 
 BigNum elementOrder(const BigNum &num, const BigNum &mod) {
+    if(gcd(num, mod) != 1_bn){
+        throw std::invalid_argument("Not an element of the group. Nums must be coprime");
+    }
     /// Group order.
     BigNum result = totientEulerFunc(mod);
     /// Prime factorization of group order.
-    std::vector<std::pair<BigNum, BigNum>> pf;
-    BigNum temp = result;
-
-    //Naive factorization
-    for(auto i = 2_bn; i <= temp && temp >= 1_bn; i = i + 1_bn){
-        if(isPrime(i) && temp % i == 0_bn) {
-            pf.push_back(std::make_pair(i, 0_bn));
-            do {
-                pf.back().second = pf.back().second + 1_bn;
-                temp = temp / i;
-            } while (temp != 0_bn && temp % i == 0_bn);
-        }
-    }
+    auto pf = factorization(result);
+    BigNum temp;
 
     for(const auto& i : pf) {
         result = result / pow(i.first, i.second, mod);
         temp = pow(num, result, mod);
         while(temp != 1_bn) {
-            temp = powMontgomery(temp, i.first, mod);
+            temp = pow(temp, i.first, mod);
             result = result * i.first;
         }
     }

@@ -20,6 +20,9 @@ set(SRC_LIST
     ${SRC_DIR}/KeyGenerator.cpp
     )
 
+# flag for primeness number in inverted number
+set(ENABLE_IS_PRIME_CHECK 1)
+
 set(LIBRARY_NAME ${PROJECT_NAME}core)
 
 add_library(${LIBRARY_NAME} STATIC ${SRC_LIST})

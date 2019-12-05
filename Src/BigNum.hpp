@@ -166,10 +166,11 @@ public:
 
     /**
      * @brief Calculates order of the element.
-     * @param num has to be an element of the group.
+     * @param num must be coprime with mode.
      * @return element order.
      */
     friend BigNum elementOrder(const BigNum& num, const BigNum& mod);
+
 
      /**
       * @brief Factorizes BigNum

@@ -456,7 +456,6 @@ TEST_CASE("Big numbers test", "[BigNum]") {
             const auto mod = 9227_bn;
             REQUIRE(powMontgomery(num, elementOrder(num, mod), mod) == 1_bn);
         }
-
         {
             const auto num = 4420_bn;
             const auto mod = 9227_bn;
