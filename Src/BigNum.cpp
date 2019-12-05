@@ -639,10 +639,11 @@ namespace lab {
 
             return inverted;
         } else {
+#ifdef ENABLE_IS_PRIME_CHECK
             if (!isPrime(mod)) {
                 throw std::invalid_argument("Mod must be prime.");
             }
-
+#endif
             if (gcd(num, mod) != 1_bn) {
                 throw std::invalid_argument("Nums must be coprime.");
             }
