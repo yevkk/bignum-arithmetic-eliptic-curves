@@ -48,19 +48,15 @@ public:
     */
     bool contains(const Point& p) const;
 
-    //TODO: do when sqrt is ready
     /**
-    * @brief Looks for points on curve with given x-coordinate
-    * @return Vector of matching points
-    */
-    std::vector<Point> findPoints(const BigNum& x);
-
-    /**
-    * @brief p must belong to curve
+    * @param Point p must belong to curve
     */
     Point invertedPoint(const Point& p) const;
 
     //TODO: fix namespace issue
+    /**
+    * @param Both points should belong to curve
+    */
     Point addPoints(const Point& first, const Point& second) const;
 
     Point powerPoint(const Point& p, const BigNum& a) const;
@@ -68,6 +64,16 @@ public:
     BigNum getFieldModulo() const;
 private:
     ///< y^2 = x^3 + a*x + b on field f
+    BigNum pointOrder(const Point& p) const;
+
+   private:
+
+    /**
+     * @brief Takes BigNum n, Point P such that nP == infinity and finds minimal order for Point
+     * */
+    BigNum reduce(BigNum& num, const Point& p) const;
+
+    /// y^2 = x^3 + a*x + b on field f
     Field* _f;
     BigNum _a;
     BigNum _b;

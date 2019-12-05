@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <iterator>
+#include <map>
 
 namespace lab {
 
@@ -19,15 +20,26 @@ constexpr char SECTION_DIGITS = 9;
 
 } // <anonymous> namespace
 
+/**
+ * @brief Returns 10^power
+ */
+long long powTen(int power)
+{
+    int value = 1;
+    for (int i = 1; i <= power; ++i) {
+        value *= 10;
+    }
+    return value;
+}
 BigNum::BigNum(std::string_view num_str) {
     for (int i = num_str.size() - 1; i >= 0; i -= SECTION_DIGITS) {
-        std::string curr_section;
-        if (i - SECTION_DIGITS + 1 < 0) {
-            curr_section = num_str.substr(0, SECTION_DIGITS + (i - SECTION_DIGITS + 1));
-        } else {
-            curr_section = num_str.substr(i - SECTION_DIGITS + 1, SECTION_DIGITS);
+        int pos = 0;
+        long long value = 0;
+        while ((pos != SECTION_DIGITS) && (i-pos >= 0)) {
+            value = value + powTen(pos)*(num_str[i-pos] - '0');
+            ++pos;
         }
-        _digits.push_back(std::stoi(curr_section));
+        _digits.push_back(value);
     }
     while (!_digits.empty() && _digits.back() == 0) {
         _digits.pop_back();
@@ -781,5 +793,130 @@ BigNum powMontgomery(const BigNum& base, BigNum degree, const BigNum& mod) {
     result = multiply(result, mc_inverted, mod);
     return result;
 }
+
+BigNum sqrt(const BigNum& num) {
+    if (num == 1_bn) {
+        return 1_bn;
+    }
+
+    BigNum res = num / 2_bn;
+    BigNum left = 0_bn, right = num;
+
+    while(true) {
+        BigNum sqr = res * res;
+        BigNum res_plus = res + 1_bn;
+        BigNum res_minus = res - 1_bn;
+
+        if (sqr == num) {
+            return res;
+        }
+
+        if (sqr < num) {
+            if ((res_plus) * (res_plus) > num) {
+                return res;
+            }
+
+            left = res;
+            try {
+                res = (right + left) * 2 / 4_bn;
+            } catch(std::exception& e) {
+                std::cout << left << std::endl << right << std::endl << std::endl;
+            }
+
+        } else {
+            if ((res_minus) * (res_minus) < num) {
+                return res_minus;
+            }
+            right = res;
+            try {
+                res = (right + left) * 2 / 4_bn;
+            } catch(std::exception& e) {
+                std::cout << left << std::endl << right << std::endl << std::endl;
+            }
+        }
+    }
+}
+
+BigNum logStep(const BigNum& num, const BigNum& base, const BigNum& mod) {
+    if (num == 1_bn) {
+        return 0_bn;
+    }
+    BigNum sqrt_mod = sqrt(mod);
+    if (sqrt_mod * sqrt_mod != mod) {
+        sqrt_mod = sqrt_mod + 1_bn;
+    }
+
+    std::map<BigNum, BigNum> base_powers;
+    for (BigNum i = 0_bn; i < sqrt_mod; i = i + 1_bn) {
+        base_powers[powMontgomery(base, i, mod)] = i;
+    }
+
+    //calculating the base in mod power to reduce the overall log calculating time
+    BigNum base_in_power = powMontgomery(inverted(base, mod, BigNum::InversionPolicy::Fermat), sqrt_mod, mod);
+
+    BigNum curr_base = base_in_power;
+    BigNum index = 1_bn;
+
+    while (true) {
+        BigNum key = multiply(num, curr_base, mod);
+        if (base_powers.count(key) == 1) {
+            return (multiply(index, sqrt_mod, mod) + base_powers[key]) % mod;
+        }
+
+        curr_base = multiply(curr_base, base_in_power, mod);
+        index = index + 1_bn;
+    }
+
+}
+
+
+BigNum Pollard_Num(const BigNum& num){
+    BigNum res;
+    BigNum a = 2_bn;
+    BigNum b = 2_bn;
+    BigNum d;
+    for (int i = 0; i >= 0; i++){
+        a = (a * a + 1_bn) % num;
+        b = (b * b + 1_bn) % num;
+        b = (b * b + 1_bn) % num;
+        if (a > b){
+            d = gcd(a - b, num);
+        }
+        else{
+            d = gcd(b - a, num);
+        }
+        if (d > 1_bn && d < num){
+            return d;
+        }
+        else if (d == num) {
+            return num;
+        }
+    }
+    return num;
+}
+std::vector<BigNum> Pollard(const BigNum& num){
+    std::vector<BigNum> result;
+    BigNum res = Pollard_Num(num);
+    result.push_back(res);
+    result.push_back(num/res);
+    return result;
+}
+
+std::vector<std::pair<BigNum, BigNum>> factorization(BigNum n) {
+    std::vector<std::pair<BigNum, BigNum>> result;
+    for (BigNum i = 2_bn; i * i <= n; i = i + 1_bn) {
+        BigNum k = 0_bn;
+        while (n % i == 0_bn) {
+            k = k + 1_bn;
+            n = n / i;
+        }
+        if (k != 0_bn) result.emplace_back(i, k);
+
+    }
+    if (n != 1_bn)
+        result.emplace_back(n, 1_bn);
+    return result;
+}
+
 
 } // namespace lab

@@ -83,24 +83,107 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
  * @brief Following function provides taking the point to the power of a
  */
 
-Point EllipticCurve::powerPoint(const Point& point, const BigNum& a) const {
-    if (a == 0_bn){
-        return neutral;
-    }
-    if (a == 1_bn){
-        return point;
-    }
-    std::pair<BigNum, BigNum> divMod = extract(a*2_bn, 4_bn);
-    Point squared = powerPoint(point,divMod.first); // let squared be point^(a/2)
-    if(divMod.second == 0_bn) { // checking if a % 2 == 0
-        return addPoints(squared,squared);
+    Point EllipticCurve::powerPoint(const Point& point, const BigNum& a) const {
+        if (a == 0_bn){
+            return neutral;
+        }
+        if (a == 1_bn){
+            return point;
+        }
+        std::pair<BigNum, BigNum> divMod = extract(a, 2_bn);
+        Point squared = powerPoint(point,divMod.first); // let squared be point^(a/2)
+        if(divMod.second == 0_bn) { // checking if a % 2 == 0
+            return addPoints(squared,squared);
 
-    } else {
-        return addPoints(addPoints(squared,squared),point);
+        } else {
+            return addPoints(addPoints(squared,squared),point);
+        }
     }
-}
 
 BigNum EllipticCurve::getFieldModulo() const{
     return _f->modulo;
 }
+
+    BigNum EllipticCurve::pointOrder(const Point& p) const {
+
+        // Calculate Q = (q + 1) * p
+
+        Point Q = powerPoint(p, _f->modulo + 1_bn);
+
+        BigNum m = sqrt(sqrt(_f->modulo)) + 1_bn;
+
+        // maks hrihorchuk debil
+
+        std::vector<Point> calculated_points;
+
+        // Calculate and store points i * p for i = 1 .. m, where m = [modulo ^ (1/4)]
+
+        Point point = p;
+        for (BigNum i = 1_bn; i <= m; i = i + 1_bn){
+            calculated_points.push_back(point);
+            point = addPoints(point, p);
+        }
+
+        bool negative = true;
+        point = powerPoint(p, 2_bn * m);
+        Point right_part(0_bn, 0_bn);
+        BigNum k = m;
+        BigNum M;
+
+        // calculate new point: result = Q + right_part
+        // where right_part = k * (2 * m * p)
+        // for k = -m, - m + 1, ..., -1, 0, 1, ..., m - 1, m
+
+        while (true){
+
+            if (negative){
+                right_part = invertedPoint(powerPoint(point, m));
+                m = m - 1_bn;
+                if (m == 0_bn) negative = false;
+            } else {
+                right_part = powerPoint(point, m);
+                m = m + 1_bn;
+            }
+
+            Point result = addPoints(Q, right_part);
+            BigNum index = 1_bn;
+
+            // check if calculated point result is equal to saved point or ist inverted
+            // (result i * p or - i * p)
+            // if yes then Q + k * (2 * m * p) = (+-) i * p, hence (while Q = (modulo + 1) * p)
+            // ( modulo + 1 + k * (2 * m) (-+) i ) * p = neutral
+            // so we get that order is divisor of M = modulo + 1 + k * (2 * m) (-+) i
+
+            for (const auto& i : calculated_points){
+                if (result == i){
+                    M = negative ? (_f->modulo + 1_bn - 2_bn * m * k - index) :
+                                    (_f->modulo + 1_bn + 2_bn * m * k - index);
+                    return reduce(M, p); // return function which finds divisor which is order
+                } else if (result == invertedPoint(i)){
+                    M = negative ? (_f->modulo + 1_bn - 2_bn * m * k + index) :
+                        (_f->modulo + 1_bn + 2_bn * m * k + index);
+                    return reduce(M, p); // return function which finds divisor which is order
+                }
+            }
+            index = index + 1_bn;
+        }
+    }
+
+    BigNum EllipticCurve::reduce(BigNum& M, const Point& p) const {
+        auto divisors = factorization(M);
+
+        bool all_not_infinity = true;
+        while (all_not_infinity){
+            all_not_infinity = false;
+            for (auto& div : divisors){
+                if (div.second > 0_bn && powerPoint(p, M/div.first) == neutral){
+                    div.second = div.second - 1_bn;
+                    all_not_infinity = true;
+                    M = M/div.first;
+                }
+            }
+        }
+
+        return M;
+    }
 }
