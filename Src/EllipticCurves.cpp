@@ -108,9 +108,9 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
         }
     }
 
-BigNum EllipticCurve::getFieldModulo() const{
-    return _f->modulo;
-}
+    BigNum EllipticCurve::getFieldModulo() const{
+        return _f->modulo;
+    }
 
     BigNum EllipticCurve::pointOrder(const Point& p) const {
 
@@ -118,7 +118,8 @@ BigNum EllipticCurve::getFieldModulo() const{
 
         Point Q = powerPoint(p, _f->modulo + 1_bn);
 
-        BigNum m = sqrt(sqrt(_f->modulo)) + 1_bn;
+        BigNum q_sqrt = sqrt(_f->modulo);
+        BigNum m = sqrt(q_sqrt) + 1_bn;
 
         std::vector<Point> calculated_points;
 
@@ -134,13 +135,15 @@ BigNum EllipticCurve::getFieldModulo() const{
         point = powerPoint(p, 2_bn * m);
         Point right_part(0_bn, 0_bn);
         BigNum k = m;
-        BigNum M;
+
 
         // calculate new point: result = Q + right_part
         // where right_part = k * (2 * m * p)
         // for k = -m, - m + 1, ..., -1, 0, 1, ..., m - 1, m
 
         while (true){
+
+            if (k == 0_bn) negative = false;
 
             if (negative){
                 right_part = invertedPoint(powerPoint(point, k));
@@ -155,16 +158,19 @@ BigNum EllipticCurve::getFieldModulo() const{
             // if yes then Q + k * (2 * m * p) = (+-) i * p, hence (while Q = (modulo + 1) * p)
             // ( modulo + 1 + k * (2 * m) (-+) i ) * p = neutral
             // so we get that order is divisor of M = modulo + 1 + k * (2 * m) (-+) i
+
             BigNum index = 1_bn;
             for (const auto& i : calculated_points){
 
                 if (result == i){
-                    M = negative ? (_f->modulo + 1_bn - 2_bn * m * k - index) :
+                    BigNum M = negative ? (_f->modulo + 1_bn - 2_bn * m * k - index) :
                                     (_f->modulo + 1_bn + 2_bn * m * k - index);
+                    M = M % _f->modulo;
                     return reduce(M, p); // return function which finds divisor which is order
                 } else if (result == invertedPoint(i)){
-                    M = negative ? (_f->modulo + 1_bn - 2_bn * m * k + index) :
+                    BigNum M = negative ? (_f->modulo + 1_bn - 2_bn * m * k + index ) :
                         (_f->modulo + 1_bn + 2_bn * m * k + index);
+                    M = M % _f->modulo;
                     return reduce(M, p); // return function which finds divisor which is order
                 }
 
@@ -177,7 +183,24 @@ BigNum EllipticCurve::getFieldModulo() const{
             } else {
                 k = k + 1_bn;
             }
+
+            if (k >= m + 1_bn){
+                break;
+            }
         }
+
+
+        BigNum left = _f->modulo + 1_bn - 2_bn * q_sqrt;
+        BigNum right = _f->modulo + 1_bn + 2_bn * q_sqrt;
+        point = powerPoint(p, left);
+        for (BigNum i = left; i <= right; i = i + 1_bn){
+            if (point == EllipticCurve::neutral){
+                return reduce(i, p);
+            }
+            point = addPoints(point, p);
+        }
+
+        return BigNum("Thank you for your attention!!!)");
     }
 
     BigNum EllipticCurve::reduce(BigNum& M, const Point& p) const {

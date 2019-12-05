@@ -8,6 +8,5 @@ using namespace lab;
 int main()
 {
 
-
     return 0;
 }
