@@ -950,5 +950,78 @@ namespace lab {
         return result;
     }
 
+    std::vector<BigNum> Naive(const BigNum& num){
+        BigNum N = num;
+        std::vector<BigNum> result;
+        BigNum a = 2_bn;
+        while (N != 1_bn){
+            if (N % a != 0_bn)
+                a = a + 1_bn;
+            else{
+                result.push_back(a);
+                N = N / a;
+            }
+        }
+        return result;
+    }
+
+
+    std::vector<std::pair<BigNum, BigNum>> factorization(BigNum n) {
+        std::vector<std::pair<BigNum, BigNum>> result;
+        for (BigNum i = 2_bn; i * i <= n; i = i + 1_bn) {
+            BigNum k = 0_bn;
+            while (n % i == 0_bn) {
+                k = k + 1_bn;
+                n = n / i;
+            }
+            if (k != 0_bn) result.emplace_back(i, k);
+
+        }
+        if (n != 1_bn)
+            result.emplace_back(n, 1_bn);
+        return result;
+    }
+
+
+BigNum totientEulerFunc(BigNum mod) {
+    BigNum result = mod;
+    for(auto i = 2_bn; i * i <= mod; i = i + 1_bn) {
+        if(mod % i == 0_bn) {
+            while(mod % i == 0_bn) mod = mod / i;
+            result = result - (result / i);
+        }
+    }
+    if(mod > 1_bn) result = result - (result / mod);
+    return result;
+}
+
+BigNum elementOrder(const BigNum &num, const BigNum &mod) {
+    /// Group order.
+    BigNum result = totientEulerFunc(mod);
+    /// Prime factorization of group order.
+    std::vector<std::pair<BigNum, BigNum>> pf;
+    BigNum temp = result;
+
+    //Naive factorization
+    for(auto i = 2_bn; i <= temp && temp >= 1_bn; i = i + 1_bn){
+        if(isPrime(i) && temp % i == 0_bn) {
+            pf.push_back(std::make_pair(i, 0_bn));
+            do {
+                pf.back().second = pf.back().second + 1_bn;
+                temp = temp / i;
+            } while (temp != 0_bn && temp % i == 0_bn);
+        }
+    }
+
+    for(const auto& i : pf) {
+        result = result / pow(i.first, i.second, mod);
+        temp = pow(num, result, mod);
+        while(temp != 1_bn) {
+            temp = powMontgomery(temp, i.first, mod);
+            result = result * i.first;
+        }
+    }
+    return result;
+}
 
 } // namespace lab
