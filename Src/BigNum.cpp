@@ -135,6 +135,9 @@ BigNum operator+(const BigNum &left, const BigNum &right) {
             addition = result._digits[curr_pos] / NUM_BASE;
             result._digits[curr_pos] = result._digits[curr_pos] % NUM_BASE;
         }
+        if (addition != 0) {
+            result._digits[left._digits.size()-1] += addition;
+        }
 
         return result;
     } else {
@@ -147,6 +150,13 @@ BigNum operator+(const BigNum &left, const BigNum &right) {
             result._digits[curr_pos] = temp % NUM_BASE;
             addition = temp / NUM_BASE;
             result._digits[curr_pos] = result._digits[curr_pos] % NUM_BASE;
+        }
+        if (addition != 0) {
+            if (left._digits.size() == right._digits.size()) {
+                result._digits.push_back(addition);
+            } else {
+                result._digits[right._digits.size()-1] += addition;
+            }
         }
 
         return result;
@@ -342,6 +352,9 @@ bool lessNumPow(std::vector<char> &fnum, std::vector<char> &snum, int curr_pow)
 }
 
 std::pair<BigNum, BigNum> extract(const BigNum &left, const BigNum &right) {
+    if (right == 0_bn) {
+        throw std::invalid_argument("Second num must not be 0");
+    }
     if (left < right) {
         return std::pair<BigNum, BigNum>(0_bn, left);
     }
@@ -402,13 +415,6 @@ BigNum add(const BigNum &left, const BigNum &right, const BigNum &mod) {
     BigNum result = t_num1 + t_num2;
     modify(result, mod);
     return result;
-}
-
-BigNum gcd(const BigNum& lhs, const BigNum& rhs) {
-    if (lhs == BigNum("0")) {
-        return rhs;
-    }
-    return gcd (rhs % lhs, lhs);
 }
 
 BigNum subtract(const BigNum &left, const BigNum &right, const BigNum &mod) {
@@ -569,6 +575,13 @@ namespace {
         const auto& [int_part, remainder] = extract(a, b);
         const auto& [x, y] = extendedEuclid(b, remainder, mod);
         return std::pair(y, subtract(x, (int_part * y) % mod, mod));
+    }
+
+    BigNum gcd(const BigNum& lhs, const BigNum& rhs) {
+        if (lhs == BigNum("0")) {
+            return rhs;
+        }
+        return gcd (rhs % lhs, lhs);
     }
 
     bool isPrime(const BigNum& num) {

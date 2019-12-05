@@ -61,8 +61,6 @@ public:
      */
     friend BigNum add(const BigNum& first, const BigNum& second, const BigNum& mod);
 
-    friend BigNum gcd(const BigNum& lhs, const BigNum& rhs);
-
     /**
      * @brief Modulo subtraction
      */
