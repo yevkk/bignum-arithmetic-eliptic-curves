@@ -17,7 +17,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(SRC_LIST
     ${SRC_DIR}/EllipticCurves.cpp
     ${SRC_DIR}/BigNum.cpp
-)
+    ${SRC_DIR}/KeyGenerator.cpp
+    )
 
 set(LIBRARY_NAME ${PROJECT_NAME}core)
 
