@@ -26,10 +26,6 @@ TEST_CASE("Key generation test","[keyGen]") {
             auto sim = GettingKeySimulation(curveDataBase[0].curves[2],4_bn, 2_bn, Point(535_bn, 12444_bn));
             REQUIRE(sim.getAlicePrivateKey() == sim.getBobPrivateKey());
         }
-        SECTION("Not so easy"){
-            auto sim = GettingKeySimulation(curveDataBase[2].curves[0],987657904356814_bn, 987676523456788_bn, Point(7_bn, 18_bn));
-            REQUIRE(sim.getAlicePrivateKey() == sim.getBobPrivateKey());
-        }
         SECTION("Brrrr, challenging") {
             auto sim = GettingKeySimulation(curveDataBase[1].curves[0],945674567654356435676543356814_bn, 9876565456434564378909876523456788_bn, Point(262_bn, 0_bn));
             REQUIRE(sim.getAlicePrivateKey() == sim.getBobPrivateKey());

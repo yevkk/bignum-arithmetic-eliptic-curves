@@ -152,9 +152,22 @@ public:
     /**
      * @brief Factorizes BigNum
      */
-     friend std::vector<BigNum> Pollard(const BigNum &num);
-
+    friend std::vector<BigNum> Pollard(const BigNum &num);
     friend std::vector<BigNum> Naive(const BigNum &num);
+
+    /**
+     * @brief Calculates the group order.
+     * @note Actually counts the number of integers between 1 and mod inclusively, which are coprime to mod.
+     * @return Group order.
+     */
+    friend BigNum totientEulerFunc(BigNum mod);
+
+    /**
+     * @brief Calculates order of the element.
+     * @param num must be coprime with mode.
+     * @return element order.
+     */
+    friend BigNum elementOrder(const BigNum& num, const BigNum& mod);
 
 
      /**

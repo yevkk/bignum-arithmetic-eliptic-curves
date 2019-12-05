@@ -135,6 +135,9 @@ BigNum operator+(const BigNum &left, const BigNum &right) {
             addition = result._digits[curr_pos] / NUM_BASE;
             result._digits[curr_pos] = result._digits[curr_pos] % NUM_BASE;
         }
+        if (addition != 0) {
+            result._digits[left._digits.size()-1] += addition;
+        }
 
         return result;
     } else {
@@ -147,6 +150,13 @@ BigNum operator+(const BigNum &left, const BigNum &right) {
             result._digits[curr_pos] = temp % NUM_BASE;
             addition = temp / NUM_BASE;
             result._digits[curr_pos] = result._digits[curr_pos] % NUM_BASE;
+        }
+        if (addition != 0) {
+            if (left._digits.size() == right._digits.size()) {
+                result._digits.push_back(addition);
+            } else {
+                result._digits[right._digits.size()-1] += addition;
+            }
         }
 
         return result;
@@ -342,6 +352,9 @@ bool lessNumPow(std::vector<char> &fnum, std::vector<char> &snum, int curr_pow)
 }
 
 std::pair<BigNum, BigNum> extract(const BigNum &left, const BigNum &right) {
+    if (right == 0_bn) {
+        throw std::invalid_argument("Second num must not be 0");
+    }
     if (left < right) {
         return std::pair<BigNum, BigNum>(0_bn, left);
     }
@@ -645,10 +658,11 @@ BigNum inverted(const BigNum& num,
 
         return inverted;
     } else {
+#ifdef ENABLE_IS_PRIME_CHECK
         if (!isPrime(mod)) {
             throw std::invalid_argument("Mod must be prime.");
         }
-
+#endif
         if (gcd(num, mod) != 1_bn) {
             throw std::invalid_argument("Nums must be coprime.");
         }
@@ -934,5 +948,38 @@ BigNum Pollard_Num(const BigNum& num){
         return result;
     }
 
+
+BigNum totientEulerFunc(BigNum mod) {
+    BigNum result = mod;
+    for(auto i = 2_bn; i * i <= mod; i = i + 1_bn) {
+        if(mod % i == 0_bn) {
+            while(mod % i == 0_bn) mod = mod / i;
+            result = result - (result / i);
+        }
+    }
+    if(mod > 1_bn) result = result - (result / mod);
+    return result;
+}
+
+BigNum elementOrder(const BigNum &num, const BigNum &mod) {
+    if(gcd(num, mod) != 1_bn){
+        throw std::invalid_argument("Not an element of the group. Nums must be coprime");
+    }
+    /// Group order.
+    BigNum result = totientEulerFunc(mod);
+    /// Prime factorization of group order.
+    auto pf = factorization(result);
+    BigNum temp;
+
+    for(const auto& i : pf) {
+        result = result / pow(i.first, i.second, mod);
+        temp = pow(num, result, mod);
+        while(temp != 1_bn) {
+            temp = pow(temp, i.first, mod);
+            result = result * i.first;
+        }
+    }
+    return result;
+}
 
 } // namespace lab
