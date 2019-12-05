@@ -191,7 +191,7 @@ BigNum EllipticCurve::getFieldModulo() const{
                     div.second = div.second - 1_bn;
                     all_not_infinity = true;
                     M = M/div.first;
-                }
+                } else div.second = 0_bn;
             }
         }
 
