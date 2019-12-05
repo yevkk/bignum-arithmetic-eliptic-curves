@@ -935,4 +935,45 @@ BigNum Pollard_Num(const BigNum& num){
     }
 
 
+BigNum totientEulerFunc(BigNum mod) {
+    BigNum result = mod;
+    for(auto i = 2_bn; i * i <= mod; i = i + 1_bn) {
+        if(mod % i == 0_bn) {
+            while(mod % i == 0_bn) mod = mod / i;
+            result = result - (result / i);
+        }
+    }
+    if(mod > 1_bn) result = result - (result / mod);
+    return result;
+}
+
+BigNum elementOrder(const BigNum &num, const BigNum &mod) {
+    /// Group order.
+    BigNum result = totientEulerFunc(mod);
+    /// Prime factorization of group order.
+    std::vector<std::pair<BigNum, BigNum>> pf;
+    BigNum temp = result;
+
+    //Naive factorization
+    for(auto i = 2_bn; i <= temp && temp >= 1_bn; i = i + 1_bn){
+        if(isPrime(i) && temp % i == 0_bn) {
+            pf.push_back(std::make_pair(i, 0_bn));
+            do {
+                pf.back().second = pf.back().second + 1_bn;
+                temp = temp / i;
+            } while (temp != 0_bn && temp % i == 0_bn);
+        }
+    }
+
+    for(const auto& i : pf) {
+        result = result / pow(i.first, i.second, mod);
+        temp = pow(num, result, mod);
+        while(temp != 1_bn) {
+            temp = powMontgomery(temp, i.first, mod);
+            result = result * i.first;
+        }
+    }
+    return result;
+}
+
 } // namespace lab
