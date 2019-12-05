@@ -869,6 +869,57 @@ BigNum logStep(const BigNum& num, const BigNum& base, const BigNum& mod) {
 
 }
 
+namespace {
+    /**
+     *  @brief Changes parameters in Pollards's algorithm for discrete logarithm
+    */
+    void modifyParameters(BigNum& x, BigNum& a, BigNum& b,
+                          const BigNum& generator, const BigNum& element, const BigNum& mod) {
+        BigNum tmp = extract(x, 3_bn).second; //remainder of division x/3
+
+        if (tmp == 1_bn) {
+            x = multiply(element, x, mod);
+            b = add(b, 1_bn, mod);
+        } else if (tmp == 0_bn) {
+            x = multiply(x, x, mod);
+            a = multiply(2_bn, a, mod);
+            b = multiply(2_bn, b, mod);
+        } else {
+            x = multiply(generator, x, mod);
+            a = add(a, 1_bn, mod);
+        }
+
+    }
+}
+
+/**
+ * @brief calculates discrete logarithm via Pollard’s rho algorithm
+ * @param generator is a generator of a cyclic group G of prime order mod, element from G
+*/
+BigNum logPollard(const BigNum& generator, BigNum element, const BigNum& mod) {
+    modify(element, mod);
+    BigNum x = multiply(generator, element, mod), a = 1_bn, b = 1_bn; //basic case: x = 1_bn, a = 0_bn, b = 0_bn
+    BigNum X = x, A = a, B = b; // X is equal to x(2i), when x is equal to x(i);
+
+    while (true){
+        // x(i) = (generator ^ a(i)) * (element ^ b(i))
+        modifyParameters(x, a, b, generator, element, mod);
+        modifyParameters(X, A, B, generator, element, mod);
+        modifyParameters(X, A, B, generator, element, mod);
+
+        if (x == X){
+            BigNum r = subtract(b, B, mod); // r = b(i) - b(2i);
+            if (r == 0_bn)
+                return BigNum::inf();
+            else {
+                BigNum r_inverted = inverted(r, mod, BigNum::InversionPolicy::Euclid);
+                return multiply(r_inverted, subtract(A, a, mod), mod);
+            }
+
+        }
+    }
+}
+
 BigNum Pollard_Num(const BigNum& num){
     BigNum res;
     BigNum a = 2_bn;

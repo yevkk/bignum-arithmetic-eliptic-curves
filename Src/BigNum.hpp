@@ -146,6 +146,12 @@ public:
     friend BigNum logStep(const BigNum&, const BigNum&, const BigNum&);
 
     /**
+    * @brief calculates discrete logarithm via Pollard’s rho algorithm
+    * @param generator is a generator of a cyclic group G of prime order mod, element from G
+    */
+    friend BigNum logPollard(const BigNum& generator, BigNum element, const BigNum& mod);
+
+    /**
      * @brief length of BigNum
      */
     friend int length(const BigNum &num);

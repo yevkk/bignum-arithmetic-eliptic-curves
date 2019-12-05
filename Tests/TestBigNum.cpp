@@ -578,4 +578,13 @@ TEST_CASE("Big numbers test", "[BigNum]") {
 //            }
 //        }
 //    }
+
+    SECTION("Discrete logarithm, using Pollard's rho algorithm") {
+        {
+            const auto generator = 3_bn;
+            const auto element = 4_bn;
+            const auto mod = 7_bn;
+            REQUIRE(logPollard(generator, element, mod) == 4_bn);
+        }
+    }
 }
