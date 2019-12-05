@@ -66,6 +66,11 @@ public:
     ///< y^2 = x^3 + a*x + b on field f
     BigNum pointOrder(const Point& p) const;
 
+    /**
+    * @return count of points on curve
+    */
+    BigNum countPoints() const;
+
 private:
 
     /**
