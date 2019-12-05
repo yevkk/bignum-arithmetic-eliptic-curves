@@ -32,7 +32,7 @@ inline const FieldMeta curveDataBase[] = {
     {Field(773_bn),
         {EllipticCurve(new Field(773_bn),761_bn,65_bn), //252.a2
          EllipticCurve(new Field(773_bn),446_bn,724_bn), //252.a1
-         EllipticCurve(new Field(773_bn),7361_bn,20_bn) //216.a1
+         EllipticCurve(new Field(773_bn),761_bn,20_bn) //216.a1
         }
     }
 };
