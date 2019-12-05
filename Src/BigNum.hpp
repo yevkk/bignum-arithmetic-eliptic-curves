@@ -143,7 +143,7 @@ public:
 
     /* @brief Finds log with given base and num
      * */
-    friend BigNum log(const BigNum&, const BigNum&, const BigNum&);
+    friend BigNum logStep(const BigNum&, const BigNum&, const BigNum&);
     /**
      * @brief length of BigNum
      */

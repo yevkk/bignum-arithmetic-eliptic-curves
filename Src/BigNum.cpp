@@ -826,7 +826,7 @@ BigNum sqrt(const BigNum& num) {
     }
 }
 
-BigNum log(const BigNum& num, const BigNum& base, const BigNum& mod) {
+BigNum logStep(const BigNum& num, const BigNum& base, const BigNum& mod) {
     if (num == 1_bn) {
         return 0_bn;
     }
