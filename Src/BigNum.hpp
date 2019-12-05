@@ -146,6 +146,7 @@ public:
      * @brief Factorizes BigNum
      */
      friend std::vector<BigNum> Pollard(const BigNum &num);
+     friend std::vector<BigNum> Naive(const BigNum &num);
 
 private:
     /// Array of coefficients in representation

@@ -807,10 +807,35 @@ BigNum Pollard_Num(const BigNum& num){
     return num;
 }
 std::vector<BigNum> Pollard(const BigNum& num){
-    std::vector<BigNum> result;
     BigNum res = Pollard_Num(num);
+    std::vector<BigNum> result(Pollard(num/res));
     result.push_back(res);
-    result.push_back(num/res);
+    return result;
+}
+BigNum Naive_Num(const BigNum& num){
+    BigNum N = num;
+    std::vector<BigNum> result;
+    BigNum a = 2_bn;
+    while (N != 1_bn){
+        if (N % a != 0_bn)
+            a = a + a;
+        else{
+            return a;
+        }
+    }
+    return a;
+}
+std::vector<BigNum> Naive(const BigNum& num){
+    BigNum res = Naive_Num(num);
+    std::vector<BigNum> result;
+    if (!isPrime(res))
+        result.push_back(res);
+    else
+        result.push_back(Naive_Num(res));
+    if (!isPrime(num/res))
+        result.push_back(num/res);
+    else
+        result.push_back(Naive_Num(num/res));
     return result;
 }
 
