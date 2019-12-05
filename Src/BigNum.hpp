@@ -171,24 +171,11 @@ public:
 
     /**
      * @brief Calculates order of the element.
-     * @param num has to be an element of the group.
+     * @param num must be coprime with mode.
      * @return element order.
      */
     friend BigNum elementOrder(const BigNum& num, const BigNum& mod);
 
-    /**
-     * @brief Calculates the group order.
-     * @note Actually counts the number of integers between 1 and mod inclusively, which are coprime to mod.
-     * @return Group order.
-     */
-    friend BigNum totientEulerFunc(BigNum mod);
-
-    /**
-     * @brief Calculates order of the element.
-     * @param num has to be an element of the group.
-     * @return element order.
-     */
-    friend BigNum elementOrder(const BigNum& num, const BigNum& mod);
 
      /**
       * @brief Factorizes BigNum
