@@ -17,8 +17,7 @@ bool EllipticCurve::contains(const Point& p) const {
         return true;
 
     /// y^2 == x^3 + A*x + B
-    if (powMontgomery(p.y, 2_bn, _f->modulo)
-           == add(powMontgomery(p.x, 3_bn,_f->modulo), add(multiply(_a, p.x, _f->modulo), _b, _f->modulo), _f->modulo))
+    if ((p.y * p.y) % _f->modulo == ((p.x * p.x * p.x + _a * p.x + _b) % _f->modulo))
        return true;
     else
        return false;
@@ -118,8 +117,6 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
 
         BigNum m = sqrt(sqrt(_f->modulo)) + 1_bn;
 
-        // maks hrihorchuk debil
-
         std::vector<Point> calculated_points;
 
         // Calculate and store points i * p for i = 1 .. m, where m = [modulo ^ (1/4)]
@@ -143,24 +140,21 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
         while (true){
 
             if (negative){
-                right_part = invertedPoint(powerPoint(point, m));
-                m = m - 1_bn;
-                if (m == 0_bn) negative = false;
+                right_part = invertedPoint(powerPoint(point, k));
             } else {
-                right_part = powerPoint(point, m);
-                m = m + 1_bn;
+                right_part = powerPoint(point, k);
             }
 
             Point result = addPoints(Q, right_part);
-            BigNum index = 1_bn;
 
             // check if calculated point result is equal to saved point or ist inverted
             // (result i * p or - i * p)
             // if yes then Q + k * (2 * m * p) = (+-) i * p, hence (while Q = (modulo + 1) * p)
             // ( modulo + 1 + k * (2 * m) (-+) i ) * p = neutral
             // so we get that order is divisor of M = modulo + 1 + k * (2 * m) (-+) i
-
+            BigNum index = 1_bn;
             for (const auto& i : calculated_points){
+
                 if (result == i){
                     M = negative ? (_f->modulo + 1_bn - 2_bn * m * k - index) :
                                     (_f->modulo + 1_bn + 2_bn * m * k - index);
@@ -170,8 +164,16 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
                         (_f->modulo + 1_bn + 2_bn * m * k + index);
                     return reduce(M, p); // return function which finds divisor which is order
                 }
+
+                index = index + 1_bn;
             }
-            index = index + 1_bn;
+
+            if (negative){
+                k = k - 1_bn;
+                if (k == 0_bn) negative = false;
+            } else {
+                k = k + 1_bn;
+            }
         }
     }
 
