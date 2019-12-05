@@ -870,7 +870,7 @@ namespace lab {
         */
         void modifyParameters(BigNum &x, BigNum &a, BigNum &b,
                               const BigNum &generator, const BigNum &element, const BigNum &mod) {
-            BigNum tmp = extract(x, 3_bn).second; //remainder of division x/3
+            BigNum tmp = x % 3_bn; //remainder of division x/3
 
             if (tmp == 1_bn) {
                 x = multiply(element, x, mod);
@@ -887,10 +887,10 @@ namespace lab {
         }
     }
 
-/**
- * @brief calculates discrete logarithm via Pollard’s rho algorithm
- * @param generator is a generator of a cyclic group G of prime order mod, element from G
-*/
+    /**
+     * @brief calculates discrete logarithm via Pollard’s rho algorithm
+     * @param generator is a generator of a cyclic group G of prime order mod, element from G
+    */
     BigNum logPollard(const BigNum &generator, BigNum element, BigNum mod) {
         modify(element, mod);
         //mod = mod - 1_bn;
@@ -904,7 +904,7 @@ namespace lab {
             modifyParameters(X, A, B, generator, element, mod);
             modifyParameters(X, A, B, generator, element, mod);
 
-            std::cout << x << "   " << a << "   " << b << "   " << X << "   " << A << "   " << B << std::endl;
+            // std::cout << x << "   " << a << "   " << b << "   " << X << "   " << A << "   " << B << std::endl;
 
             if (x == X) {
                 BigNum r = subtract(b, B, mod); // r = b(i) - b(2i);
