@@ -62,11 +62,11 @@ public:
     Point powerPoint(const Point& p, const BigNum& a) const;
 
     BigNum getFieldModulo() const;
-private:
+
     ///< y^2 = x^3 + a*x + b on field f
     BigNum pointOrder(const Point& p) const;
 
-   private:
+private:
 
     /**
      * @brief Takes BigNum n, Point P such that nP == infinity and finds minimal order for Point
