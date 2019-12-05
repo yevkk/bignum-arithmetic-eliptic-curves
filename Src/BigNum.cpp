@@ -948,22 +948,15 @@ BigNum totientEulerFunc(BigNum mod) {
 }
 
 BigNum elementOrder(const BigNum &num, const BigNum &mod) {
+    
+    if(gcd(num, mod) != 1_bn){
+        throw std::invalid_argument("Not an element of the group. Nums must be coprime");
+    }
     /// Group order.
     BigNum result = totientEulerFunc(mod);
     /// Prime factorization of group order.
-    std::vector<std::pair<BigNum, BigNum>> pf;
-    BigNum temp = result;
-
-    //Naive factorization
-    for(auto i = 2_bn; i <= temp && temp >= 1_bn; i = i + 1_bn){
-        if(isPrime(i) && temp % i == 0_bn) {
-            pf.push_back(std::make_pair(i, 0_bn));
-            do {
-                pf.back().second = pf.back().second + 1_bn;
-                temp = temp / i;
-            } while (temp != 0_bn && temp % i == 0_bn);
-        }
-    }
+    auto pf = factorization(result);
+    BigNum temp;
 
     for(const auto& i : pf) {
         result = result / pow(i.first, i.second, mod);
