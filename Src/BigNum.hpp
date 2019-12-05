@@ -149,7 +149,7 @@ public:
     * @brief calculates discrete logarithm via Pollard’s rho algorithm
     * @param generator is a generator of a cyclic group G of prime order mod, element from G
     */
-    friend BigNum logPollard(const BigNum& generator, BigNum element, const BigNum& mod);
+    friend BigNum logPollard(const BigNum& generator, BigNum element, BigNum mod);
 
     /**
      * @brief length of BigNum
