@@ -117,6 +117,14 @@ TEST_CASE("Elliptic curves test", "[curves]") {
             REQUIRE(curveDataBase[2].curves[1].powerPoint(p1, 766_bn) == EllipticCurve::neutral);
             REQUIRE(curveDataBase[2].curves[1].pointOrder(p1) == 766_bn);
         }
+
+        SECTION("Ponomaryov"){
+            const lab::Point p = {228960_bn,91781_bn};
+
+            REQUIRE(curveDataBase[0].curves[0].pointOrder(p) == 58418_bn);
+            REQUIRE(curveDataBase[0].curves[0].powerPoint(p, 58418_bn) == EllipticCurve::neutral);
+
+        }
     }
     SECTION("Curve conatains result"){
         SECTION("Adding points"){
