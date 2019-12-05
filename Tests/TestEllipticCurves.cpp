@@ -107,7 +107,7 @@ TEST_CASE("Elliptic curves test", "[curves]") {
         SECTION("Bortnik"){
             const lab::Point p1 = { 769_bn, 7_bn };
 
-            std::cout << curveDataBase[2].curves[0].pointOrder(p1);
+            REQUIRE(curveDataBase[2].curves[0].pointOrder(p1) == 775_bn);
         }
 
         SECTION("Golovach"){

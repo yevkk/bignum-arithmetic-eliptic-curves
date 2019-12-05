@@ -116,7 +116,9 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
 
         Point Q = powerPoint(p, _f->modulo + 1_bn);
 
-        BigNum m = 5623985_bn; //MAKS HRIHORCHUK KIN KOREN PZH
+        BigNum m = sqrt(sqrt(_f->modulo)) + 1_bn;
+
+        // maks hrihorchuk debil
 
         std::vector<Point> calculated_points;
 
