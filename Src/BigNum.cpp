@@ -948,7 +948,6 @@ BigNum totientEulerFunc(BigNum mod) {
 }
 
 BigNum elementOrder(const BigNum &num, const BigNum &mod) {
-    
     if(gcd(num, mod) != 1_bn){
         throw std::invalid_argument("Not an element of the group. Nums must be coprime");
     }
