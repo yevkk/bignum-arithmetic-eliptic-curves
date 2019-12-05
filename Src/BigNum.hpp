@@ -68,7 +68,7 @@ public:
 
 
     /**
-     * @brief Multiplication of two numbers by Karatsuba or Montgomery algorithm
+     * @brief Multiplication of two numbers
      */
     friend BigNum multiply(const BigNum& lhs, const BigNum& rhs, const BigNum& mod);
 
@@ -137,6 +137,13 @@ public:
      */
     friend BigNum powMontgomery(const BigNum& base, BigNum degree, const BigNum& mod);
 
+    /*
+     * @brief Finds square root of num*/
+    friend BigNum sqrt(const BigNum& num);
+
+    /* @brief Finds log with given base and num
+     * */
+    friend BigNum logStep(const BigNum&, const BigNum&, const BigNum&);
     /**
      * @brief length of BigNum
      */
@@ -160,6 +167,12 @@ public:
      * @return element order.
      */
     friend BigNum elementOrder(const BigNum& num, const BigNum& mod);
+
+     /**
+      * @brief Factorizes BigNum
+      * @return Vector of pairs where in pair first number is prime and second is its exponent
+      * */
+     friend std::vector<std::pair<BigNum, BigNum>> factorization(BigNum num);
 
 private:
     /// Array of coefficients in representation
