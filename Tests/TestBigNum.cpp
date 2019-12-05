@@ -522,9 +522,60 @@ TEST_CASE("Big numbers test", "[BigNum]") {
                 const auto num = 348563496834760374863470673046703476037_bn;
                 REQUIRE(sqrt(num) == 18669855297638500306_bn);
             }
-
-
         }
+    }
 
+    SECTION("log of BigNum") {
+        SECTION("easy") {
+            {
+                REQUIRE(log(57_bn, 3_bn, 113_bn) == 100_bn);
+            }
+            {
+                REQUIRE(log(1_bn, 2_bn, 1000_bn) == 0_bn);
+            }
+            {
+                REQUIRE(log(40_bn, 10_bn, 127_bn) == 13_bn);
+            }
+            {
+                REQUIRE(log(88_bn, 17_bn, 149_bn) == 20_bn);
+            }
+            {
+                REQUIRE(log(80_bn, 43_bn, 181_bn) == 26_bn);
+            }
+            {
+                REQUIRE(log(74_bn, 9_bn, 163_bn) == 13_bn);
+            }
+        }
+        SECTION("normal") {
+            {
+                REQUIRE(log(47_bn, 142_bn, 367_bn) == 38_bn);
+            }
+            {
+                REQUIRE(log(244_bn, 99_bn, 257_bn) == 71_bn);
+            }
+            {
+                REQUIRE(log(276_bn, 117_bn, 449_bn) == 101_bn);
+            }
+            {
+                REQUIRE(log(48_bn, 261_bn, 683_bn) == 333_bn);
+            }
+            {
+                REQUIRE(log(718_bn, 391_bn, 947_bn) == 72_bn);
+            }
+        }
+        SECTION("difficult") {
+            {
+                REQUIRE(log(46304_bn, 1234_bn, 1000669_bn) == 333867_bn);
+            }
+            {
+                REQUIRE(log(207775_bn, 512_bn, 1012861_bn) == 44112_bn);
+            }
+            {
+                REQUIRE(log(1041299_bn, 46327_bn, 2511953_bn) == 81743_bn);
+            }
+            {
+                REQUIRE(log(2749733_bn, 95518_bn, 3920239_bn) == 39227_bn);
+            }
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <iterator>
-#include <set>
+#include <map>
 
 namespace lab {
 
@@ -808,7 +808,7 @@ BigNum sqrt(const BigNum& num) {
             left = res;
             try {
                 res = (right + left) * 2 / 4_bn;
-            } catch(std::exception e) {
+            } catch(std::exception& e) {
                 std::cout << left << std::endl << right << std::endl << std::endl;
             }
 
@@ -819,7 +819,7 @@ BigNum sqrt(const BigNum& num) {
             right = res;
             try {
                 res = (right + left) * 2 / 4_bn;
-            } catch(std::exception e) {
+            } catch(std::exception& e) {
                 std::cout << left << std::endl << right << std::endl << std::endl;
             }
         }
@@ -827,7 +827,34 @@ BigNum sqrt(const BigNum& num) {
 }
 
 BigNum log(const BigNum& num, const BigNum& base, const BigNum& mod) {
+    if (num == 1_bn) {
+        return 0_bn;
+    }
     BigNum sqrt_mod = sqrt(mod);
+    if (sqrt_mod * sqrt_mod != mod) {
+        sqrt_mod = sqrt_mod + 1_bn;
+    }
+
+    std::map<BigNum, BigNum> base_powers;
+    for (BigNum i = 0_bn; i < sqrt_mod; i = i + 1_bn) {
+        base_powers[powMontgomery(base, i, mod)] = i;
+    }
+
+    //calculating the base in mod power to reduce the overall log calculating time
+    BigNum base_in_power = powMontgomery(inverted(base, mod, BigNum::InversionPolicy::Fermat), sqrt_mod, mod);
+
+    BigNum curr_base = base_in_power;
+    BigNum index = 1_bn;
+
+    while (true) {
+        BigNum key = multiply(num, curr_base, mod);
+        if (base_powers.count(key) == 1) {
+            return (multiply(index, sqrt_mod, mod) + base_powers[key]) % mod;
+        }
+
+        curr_base = multiply(curr_base, base_in_power, mod);
+        index = index + 1_bn;
+    }
 
 }
 

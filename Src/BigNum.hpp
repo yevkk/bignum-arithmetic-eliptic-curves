@@ -137,9 +137,11 @@ public:
      */
     friend BigNum powMontgomery(const BigNum& base, BigNum degree, const BigNum& mod);
 
-    friend BigNum sqrt(const BigNum&);
-
     /*
+     * @brief Finds square root of num*/
+    friend BigNum sqrt(const BigNum& num);
+
+    /* @brief Finds log with given base and num
      * */
     friend BigNum log(const BigNum&, const BigNum&, const BigNum&);
     /**
