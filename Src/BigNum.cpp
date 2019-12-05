@@ -962,7 +962,7 @@ BigNum elementOrder(const BigNum &num, const BigNum &mod) {
         result = result / pow(i.first, i.second, mod);
         temp = pow(num, result, mod);
         while(temp != 1_bn) {
-            temp = powMontgomery(temp, i.first, mod);
+            temp = pow(temp, i.first, mod);
             result = result * i.first;
         }
     }
