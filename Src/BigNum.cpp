@@ -883,6 +883,62 @@ BigNum logStep(const BigNum& num, const BigNum& base, const BigNum& mod) {
 
 }
 
+namespace {
+    /**
+     *  @brief Changes parameters in Pollards's algorithm for discrete logarithm
+     */
+    void modifyParameters(BigNum &x, BigNum &a, BigNum &b,
+                          const BigNum &generator, const BigNum &element, const BigNum &mod) {
+        //BigNum tmp = x % 3_bn; //remainder of division x/3
+        BigNum tmp1 = mod / 3_bn;
+        BigNum tmp2 = 2_bn * mod / 3_bn;
+
+        if (x < tmp1) {
+            x = multiply(element, x, mod);
+            b = add(b, 1_bn, mod - 1_bn);
+        } else if (x < tmp2) {
+            x = multiply(x, x, mod);
+            a = multiply(2_bn, a, mod - 1_bn);
+            b = multiply(2_bn, b, mod - 1_bn);
+        } else {
+            x = multiply(generator, x, mod);
+            a = add(a, 1_bn, mod - 1_bn);
+        }
+
+    }
+} // <anonumous> namespace
+
+/**
+ * @brief calculates discrete logarithm via Pollard’s rho algorithm
+ * @param generator is a generator of a cyclic group G of prime order mod, element from G
+ */
+BigNum logPollard(const BigNum &generator, BigNum element, BigNum mod) {
+    modify(element, mod);
+    //mod = mod - 1_bn;
+    //BigNum x = multiply(generator, element, mod), a = 1_bn, b = 1_bn; //basic case: x = 1_bn, a = 0_bn, b = 0_bn
+    BigNum x = 1_bn, a = 0_bn, b = 0_bn;
+    BigNum X = x, A = a, B = b; // X is equal to x(2i), when x is equal to x(i);
+
+    while (true) {
+        // x(i) = (generator ^ a(i)) * (element ^ b(i))
+        modifyParameters(x, a, b, generator, element, mod);
+        modifyParameters(X, A, B, generator, element, mod);
+        modifyParameters(X, A, B, generator, element, mod);
+
+        // std::cout << x << "   " << a << "   " << b << "   " << X << "   " << A << "   " << B << std::endl;
+
+        if (x == X) {
+            BigNum r = subtract(b, B, mod - 1_bn); // r = b(i) - b(2i);
+            if (r == 0_bn)
+                return BigNum::inf();
+            else {
+                BigNum r_inverted = inverted(r, mod - 1_bn, BigNum::InversionPolicy::Fermat);
+                return multiply(r_inverted, subtract(A, a, mod - 1_bn), mod - 1_bn);
+            }
+
+        }
+    }
+}
 
 BigNum Pollard_Num(const BigNum& num){
     BigNum res;
