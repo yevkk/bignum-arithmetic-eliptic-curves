@@ -190,5 +190,4 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
 
         return M;
     }
-
 }
