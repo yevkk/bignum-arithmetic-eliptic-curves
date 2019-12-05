@@ -65,7 +65,8 @@ public:
 
     Point powerPoint(const Point& p, const BigNum& a) const;
 
-   private:
+    BigNum getFieldModulo() const;
+private:
     ///< y^2 = x^3 + a*x + b on field f
     Field* _f;
     BigNum _a;

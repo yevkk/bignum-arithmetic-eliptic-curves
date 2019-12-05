@@ -38,11 +38,11 @@ GettingKeySimulation::GettingKeySimulation(const EllipticCurve& curve, const Big
 }
 
 Point GettingKeySimulation::getAlicePrivateKey() const {
-    return _alice.getPublicKey();
+    return _alice.getPrivateKey();
 }
 
 Point GettingKeySimulation::getBobPrivateKey() const {
-    return _bob.getPublicKey();
+    return _bob.getPrivateKey();
 }
 
 }

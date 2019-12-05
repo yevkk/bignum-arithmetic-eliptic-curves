@@ -83,21 +83,24 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
  * @brief Following function provides taking the point to the power of a
  */
 
-    Point EllipticCurve::powerPoint(const Point& point, const BigNum& a) const {
-        if (a == 0_bn){
-            return neutral;
-        }
-        if (a == 1_bn){
-            return point;
-        }
-        std::pair<BigNum, BigNum> divMod = extract(a, 2_bn);
-        Point squared = powerPoint(point,divMod.first); // let squared be point^(a/2)
-        if(divMod.second == 0_bn) { // checking if a % 2 == 0
-            return addPoints(squared,squared);
-
-        } else {
-            return addPoints(addPoints(squared,squared),point);
-        }
+Point EllipticCurve::powerPoint(const Point& point, const BigNum& a) const {
+    if (a == 0_bn){
+        return neutral;
     }
+    if (a == 1_bn){
+        return point;
+    }
+    std::pair<BigNum, BigNum> divMod = extract(a*2_bn, 4_bn);
+    Point squared = powerPoint(point,divMod.first); // let squared be point^(a/2)
+    if(divMod.second == 0_bn) { // checking if a % 2 == 0
+        return addPoints(squared,squared);
 
+    } else {
+        return addPoints(addPoints(squared,squared),point);
+    }
+}
+
+BigNum EllipticCurve::getFieldModulo() const{
+    return _f->modulo;
+}
 }

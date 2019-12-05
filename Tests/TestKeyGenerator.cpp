@@ -9,26 +9,38 @@ TEST_CASE("Key generation test","[keyGen]") {
     using namespace lab;
 
     SECTION("Testing client"){
-        SECTION("Public key on curve"){
-            auto bob = Client (curveDataBase[1].curves[0], 98765678909876523456788_bn, Point(262_bn, 0_bn));
-            REQUIRE(curveDataBase[1].curves[0].contains(bob.getPublicKey()) == true);
-        }
-        SECTION("Public key on curve"){
-            auto ali = Client (curveDataBase[1].curves[0], 98765678909876523456788_bn, Point(262_bn, 0_bn));
-            auto bob = Client (curveDataBase[1].curves[0], 987657904356814_bn, Point(262_bn, 0_bn));
+        SECTION("Testing result of private key"){
+            auto powA = 98765678909876523456788_bn, powB = 987657904356814_bn;
+            auto curv = curveDataBase[1].curves[2];
+            auto point = Point(3333_bn, 100_bn);
+            auto ali = Client (curv, powA, point);
+            auto bob = Client (curv, powB, point);
             bob.setPrivateKey(ali.getPublicKey());
-            REQUIRE(curveDataBase[1].curves[0].contains(bob.getPrivateKey()) == true);
+            REQUIRE(bob.getPrivateKey() == curv.powerPoint(curv.powerPoint(point, powA), powB));
 
         }
     }
 
     SECTION("Comparing got private keys"){
         SECTION("Easy"){
-            auto sim = GettingKeySimulation(curveDataBase[1].curves[0],4_bn, 2_bn, Point(262_bn, 0_bn));
+            auto sim = GettingKeySimulation(curveDataBase[0].curves[2],4_bn, 2_bn, Point(535_bn, 12444_bn));
             REQUIRE(sim.getAlicePrivateKey() == sim.getBobPrivateKey());
         }
         SECTION("Not so easy"){
-            auto sim = GettingKeySimulation(curveDataBase[1].curves[0],987657904356814_bn, 98765678909876523456788_bn, Point(262_bn, 0_bn));
+            auto sim = GettingKeySimulation(curveDataBase[0].curves[1],987657904356814_bn, 987676523456788_bn, Point(110_bn, 574_bn));
+            REQUIRE(sim.getAlicePrivateKey() == sim.getBobPrivateKey());
+        }
+        SECTION("Brrrr, challenging") {
+            auto sim = GettingKeySimulation(curveDataBase[1].curves[0],9456745676543566543567654387657904356814_bn, 98765654564356435675434564378909876523456788_bn, Point(262_bn, 0_bn));
+            REQUIRE(sim.getAlicePrivateKey() == sim.getBobPrivateKey());
+        }
+        SECTION("OOA OAA MMM"){
+            auto sim = GettingKeySimulation(curveDataBase[2].curves[0],9876579045555555555555555665433252634814_bn, 9877565458785678846573465678909876523456788_bn, Point(7_bn, 18_bn));
+            REQUIRE(sim.getAlicePrivateKey() == sim.getBobPrivateKey());
+        }
+        SECTION("Razryv"){
+            auto sim = GettingKeySimulation(curveDataBase[2].curves[0],98765790455555555555555556654332526348149273494634050943266239450543726284505893673949377394504848_bn,
+                                                                              9877565458785678846573465678909876523456085080457683470347583470587340570394750347603475094370943788_bn, Point(7_bn, 18_bn));
             REQUIRE(sim.getAlicePrivateKey() == sim.getBobPrivateKey());
         }
     }
