@@ -417,6 +417,13 @@ BigNum add(const BigNum &left, const BigNum &right, const BigNum &mod) {
     return result;
 }
 
+BigNum gcd(const BigNum& lhs, const BigNum& rhs) {
+    if (lhs == BigNum("0")) {
+        return rhs;
+    }
+    return gcd (rhs % lhs, lhs);
+}
+
 BigNum subtract(const BigNum &left, const BigNum &right, const BigNum &mod) {
     auto t_num2 = right % mod;
     auto t_num1 = left % mod;
@@ -575,13 +582,6 @@ namespace {
         const auto& [int_part, remainder] = extract(a, b);
         const auto& [x, y] = extendedEuclid(b, remainder, mod);
         return std::pair(y, subtract(x, (int_part * y) % mod, mod));
-    }
-
-    BigNum gcd(const BigNum& lhs, const BigNum& rhs) {
-        if (lhs == BigNum("0")) {
-            return rhs;
-        }
-        return gcd (rhs % lhs, lhs);
     }
 
     bool isPrime(const BigNum& num) {

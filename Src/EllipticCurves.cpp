@@ -220,4 +220,24 @@ Point EllipticCurve::addPoints(const Point& first, const Point& second) const {
 
         return M;
     }
+
+    BigNum EllipticCurve::countPoints() const {
+        BigNum left = _f->modulo + 1_bn - 2_bn * sqrt(_f->modulo);
+        BigNum right = _f->modulo + 1_bn + 2_bn * sqrt(_f->modulo);
+        BigNum lcm = 1_bn;
+        BigNum x = 1_bn;
+        while (!(left <= lcm && lcm <= right)){
+            while (!sqrt(x * x * x + x * _a + _b, _f->modulo) ||
+                   !contains(Point(x, sqrt(x * x * x + x * _a + _b, _f->modulo)->second))){
+                x = x + 1_bn;
+            }
+            Point point = Point(x, sqrt(x * x * x + x * _a + _b, _f->modulo)->second);
+            if (contains(point)) {
+                BigNum point_order = pointOrder(point);
+                lcm = point_order * lcm / gcd(point_order, lcm);
+            }
+            x = x + 1_bn;
+        }
+        return lcm;
+    }
 }

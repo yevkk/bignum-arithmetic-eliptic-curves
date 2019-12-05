@@ -133,5 +133,10 @@ TEST_CASE("Elliptic curves test", "[curves]") {
             REQUIRE(curveDataBase[2].curves[0].contains(curveDataBase[2].curves[0].addPoints(p1,p2)) == true);
         }
     }
+    SECTION("Curve order"){
+        SECTION("Check first curve"){
+            REQUIRE(curveDataBase[2].curves[2].countPoints() == 750_bn);
+        }
+    }
 
 }
